@@ -1,6 +1,10 @@
 using BackendAPI.Utils;
+using TaskManager.Services;
 
 var builder = WebApplication.CreateBuilder(args);
+
+// token(jWT)
+builder.Services.AddScoped<TokenService>();
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
