@@ -18,18 +18,7 @@
 
   <ItemGroup>
     <Folder Include="Config/" />
-    <Folder Include="Controllers/" />
-    <Folder Include="Data/" />
-    <Folder Include="DTOs/" />
-    <Folder Include="DTOs/Requests/" />
-    <Folder Include="DTOs/Responses/" />
-    <Folder Include="Exceptions/" />
     <Folder Include="Extensions/" />
-    <Folder Include="Helpers/" />
-    <Folder Include="Middlewares/" />
-    <Folder Include="Models/" />
-    <Folder Include="Services/" />
-    <Folder Include="Services/Interfaces/" />
   </ItemGroup>
 
 </Project>
