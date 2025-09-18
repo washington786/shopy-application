@@ -1,5 +1,6 @@
 using System.Text;
 using Backend.Data;
+using Backend.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -52,13 +53,12 @@ public class DependencyHelper(IConfiguration configuration, IServiceCollection s
 
     public void IdentityAdding()
     {
-        _service.AddIdentity<ApplicationDbContext, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
+        _service.AddIdentity<AppUser, IdentityRole>().AddEntityFrameworkStores<ApplicationDbContext>().AddDefaultTokenProviders();
     }
 
     public void AddAuthentication()
     {
         var jwt = _config.GetSection("Jwt");
-        Console.WriteLine(jwt["Key"]);
         _service.AddAuthentication(op =>
         {
             op.DefaultChallengeScheme = "Bearer";

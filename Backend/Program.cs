@@ -24,6 +24,9 @@ dependencyUtilHelper.AddAuthentication();
 
 var app = builder.Build();
 
+// cors
+app.UseCors(app.Environment.IsDevelopment() ? "dev" : "prod");
+
 if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
