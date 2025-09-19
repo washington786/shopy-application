@@ -1,5 +1,6 @@
 using Backend.DTOs.Requests.Category;
 using Backend.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -27,6 +28,7 @@ namespace Backend.Controllers
         }
 
         [HttpPost("create")]
+        [Authorize(Roles = "Admin,StoreManager")]
         public async Task<ActionResult> CreateAsync([FromBody] CreateCategorybRequest categorybRequest)
         {
             if (!ModelState.IsValid)
@@ -40,6 +42,7 @@ namespace Backend.Controllers
         }
 
         [HttpPut("{categoryId}")]
+        [Authorize(Roles = "Admin,StoreManager")]
         public async Task<ActionResult> UpdateAsync(int categoryId, [FromBody] UpdateCategoryrequest categoryrequest)
         {
             if (!ModelState.IsValid)
@@ -52,6 +55,7 @@ namespace Backend.Controllers
         }
 
         [HttpDelete("{categoryId}")]
+        [Authorize(Roles = "Admin,StoreManager")]
         public async Task<ActionResult> DeleteAsync(int categoryId)
         {
             await _service.RemoveAsync(categoryId);

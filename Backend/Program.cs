@@ -6,6 +6,8 @@ var builder = WebApplication.CreateBuilder(args);
 // token(jWT)
 builder.Services.AddScoped<TokenService>();
 
+// TODO:add service scopes
+
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 
