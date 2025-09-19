@@ -1,6 +1,5 @@
 using Backend.DTOs.Requests.Auth;
 using Backend.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Backend.Controllers
@@ -57,6 +56,18 @@ namespace Backend.Controllers
             return Ok(res);
         }
 
+        [HttpDelete("{userId}")]
+        public async Task<ActionResult> DeleteProfile(string userId)
+        {
+            if (string.IsNullOrEmpty(userId))
+            {
+                return BadRequest(new { message = "invalid user id" });
+            }
+
+            var res = await service.DeleteProfile(userId);
+
+            return Ok(res);
+        }
 
     }
 }
