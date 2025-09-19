@@ -11,4 +11,7 @@ public class AppUser : IdentityUser
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
     public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+
+    public ICollection<Order>? Orders { get; set; }
+    public ICollection<CartItem>? CartItems { get; set; }
 }
