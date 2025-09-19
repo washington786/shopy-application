@@ -43,5 +43,20 @@ namespace Backend.Controllers
             var res = await service.GetMyProfile();
             return Ok(res);
         }
+
+        [HttpPut("me")]
+        public async Task<ActionResult> UpdateProfile([FromBody] UpdateUserRequest updateUserRequest)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new { message = "Sorry, invalid input fields." });
+            }
+
+            var res = await service.UpdateProfile(updateUserRequest);
+
+            return Ok(res);
+        }
+
+
     }
 }
