@@ -11,4 +11,7 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     {
         base.OnModelCreating(builder);
     }
+
+    public DbSet<Category> Categories { get; set; }
+
 }
