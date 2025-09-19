@@ -1,5 +1,3 @@
-using System;
-using System.Security.Claims;
 using Backend.DTOs.Requests.Auth;
 using Backend.DTOs.Responses.Auth;
 using Backend.Models;
@@ -9,16 +7,12 @@ using TaskManager.Services;
 
 namespace Backend.Services;
 
-public class AuthService(UserManager<AppUser> userManager, TokenService service, ILogger<AuthService> logger, IHttpContextAccessor httpContextAccessor) : IAuthService
+public class AuthService(UserManager<AppUser> userManager, TokenService service, IHttpContextAccessor httpContextAccessor) : IAuthService
 {
     private readonly UserManager<AppUser> manager = userManager;
     private readonly TokenService tokenService = service;
 
-    private readonly ILogger<AuthService> log = logger;
-
     private readonly IHttpContextAccessor httpContext = httpContextAccessor;
-
-
 
     public async Task<AuthResponse> LoginUser(LoginRequest loginRequest)
     {

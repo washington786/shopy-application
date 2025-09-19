@@ -1,3 +1,5 @@
+using Backend.DTOs.Requests.Auth;
+using Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -5,7 +7,41 @@ namespace Backend.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
-    public class AuthController : ControllerBase
+    public class AuthController(IAuthService authService) : ControllerBase
     {
+        private readonly IAuthService service = authService;
+
+        [HttpPost("register")]
+        public async Task<ActionResult> RegisterAccount([FromBody] RegisterReequest registerReequest)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new { message = "Sorry, invalid input fields." });
+            }
+
+            var res = await service.RegisterUser(registerReequest);
+
+            return Ok(res);
+        }
+
+        [HttpPost("login")]
+        public async Task<ActionResult> LoginUser([FromBody] LoginRequest loginRequest)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(new { message = "Sorry, invalid input fields." });
+            }
+
+            var res = await service.LoginUser(loginRequest);
+
+            return Ok(res);
+        }
+
+        [HttpGet("my-profile")]
+        public async Task<ActionResult> GetMyProfile()
+        {
+            var res = await service.GetMyProfile();
+            return Ok(res);
+        }
     }
 }
