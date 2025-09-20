@@ -66,7 +66,7 @@ public class DependencyHelper(IConfiguration configuration, IServiceCollection s
     public void DbConnectionCtx()
     {
         var connection_db = _config.GetConnectionString("DefaultConnection");
-        _service.AddDbContext<ApplicationDbContext>(options => options.UseSqlite(connection_db));
+        _service.AddDbContext<ApplicationDbContext>(options => options.UseNpgsql(connection_db));
     }
 
     public void IdentityAdding()
