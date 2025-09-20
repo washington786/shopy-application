@@ -108,3 +108,6 @@ Shopy.WebApi/
     │   ├── [timestamp]_InitialCreate.cs
     │   └── [timestamp]_InitialCreate.Designer.cs
     └── ShopZen.WebApi.db     ← Local DB file (ignored in .gitignore)
+
+Backend/shopy-api.runasp.net-WebDeploy.publishSettings
+dotnet msbuild /t:Build /p:DeployOnBuild=true /p:PublishProfile="Backend/shopy-api.runasp.net-WebDeploy.publishSettings"

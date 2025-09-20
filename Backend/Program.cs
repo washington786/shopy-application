@@ -44,10 +44,11 @@ var app = builder.Build();
 // cors
 app.UseCors(app.Environment.IsDevelopment() ? "dev" : "prod");
 
+app.UseSwagger();
+app.UseSwaggerUI();
+
 if (app.Environment.IsDevelopment())
 {
-    app.UseSwagger();
-    app.UseSwaggerUI();
     app.UseHttpsRedirection();
 }
 
