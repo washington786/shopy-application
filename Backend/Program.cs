@@ -15,6 +15,7 @@ builder.Services.AddScoped<IOrderService, OrderService>();
 builder.Services.AddScoped<IPaymentService, PaymentService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IAdminService, AdminService>();
+builder.Services.AddScoped<IRoleService, RoleSeederService>();
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();

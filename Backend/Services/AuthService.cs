@@ -105,33 +105,6 @@ public class AuthService(UserManager<AppUser> userManager, TokenService service,
             user.FullName = updateUserRequest.FullName;
         }
 
-        if (updateUserRequest.Roles?.Any() == true)
-        {
-            var currentRoles = await manager.GetRolesAsync(user);
-            var rolesToAdd = updateUserRequest.Roles.Except(currentRoles).ToList();
-            var rolesToRemove = currentRoles.Except(updateUserRequest.Roles).ToList();
-
-            if (rolesToRemove.Any())
-            {
-                var removeResult = await manager.RemoveFromRolesAsync(user, rolesToRemove);
-                if (!removeResult.Succeeded)
-                {
-                    var errors = string.Join(", ", removeResult.Errors.Select(e => e.Description));
-                    throw new InvalidOperationException($"Failed to remove roles: {errors}");
-                }
-            }
-
-            if (rolesToAdd.Any())
-            {
-                var addResult = await manager.AddToRolesAsync(user, rolesToAdd);
-                if (!addResult.Succeeded)
-                {
-                    var errors = string.Join(", ", addResult.Errors.Select(e => e.Description));
-                    throw new InvalidOperationException($"Failed to add roles: {errors}");
-                }
-            }
-        }
-
         var res = await manager.UpdateAsync(user);
 
         var roles = await manager.GetRolesAsync(user);
