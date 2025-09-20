@@ -50,7 +50,7 @@ public class AuthService(UserManager<AppUser> userManager, TokenService service,
         }
         // create user
 
-        var user = new AppUser() { Email = registerReequest.Email, FullName = registerReequest.FullName };
+        var user = new AppUser() { Email = registerReequest.Email, FullName = registerReequest.FullName, UserName = registerReequest.Email };
         var results = await manager.CreateAsync(user, registerReequest.Password);
 
         // if user not created, throw an exception
