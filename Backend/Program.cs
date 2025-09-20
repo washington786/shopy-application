@@ -1,6 +1,8 @@
+using Backend.Data;
 using Backend.Services;
 using Backend.Services.Interfaces;
 using BackendAPI.Utils;
+using Microsoft.EntityFrameworkCore;
 using TaskManager.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -18,11 +20,12 @@ builder.Services.AddScoped<IAdminService, AdminService>();
 builder.Services.AddScoped<IRoleService, RoleSeederService>();
 
 builder.Services.AddControllers();
-builder.Services.AddOpenApi();
 
 // swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+builder.Services.AddHealthChecks();
 
 // custom dependency helper
 var dependencyUtilHelper = new DependencyHelper(builder.Configuration, builder.Services);
@@ -33,32 +36,33 @@ dependencyUtilHelper.IdentityAdding();
 dependencyUtilHelper.AddCors();
 dependencyUtilHelper.AddAuthentication();
 
-builder.WebHost.UseKestrel()
-    .UseUrls("http://0.0.0.0:" + (Environment.GetEnvironmentVariable("PORT") ?? "5000"));
-
+// port
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5205";
+builder.WebHost.UseKestrel().UseUrls($"http://*:{port}");
 
 var app = builder.Build();
-
 // cors
 app.UseCors(app.Environment.IsDevelopment() ? "dev" : "prod");
 
 if (app.Environment.IsDevelopment())
 {
-    app.MapOpenApi();
     app.UseSwagger();
     app.UseSwaggerUI();
+    app.UseHttpsRedirection();
 }
 
-app.UseHttpsRedirection();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
+app.MapHealthChecks("/health");
 // seeding
-using (var scope = app.Services.CreateAsyncScope())
+using (var scope = app.Services.CreateScope())
 {
     var roleSeeder = scope.ServiceProvider.GetRequiredService<IRoleService>();
+    var dbCtxt = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     await roleSeeder.CreateRoleSeeding();
+    await dbCtxt.Database.MigrateAsync();
 }
 
 app.Run();
