@@ -1,3 +1,5 @@
+using Backend.Services;
+using Backend.Services.Interfaces;
 using BackendAPI.Utils;
 using TaskManager.Services;
 
@@ -6,7 +8,12 @@ var builder = WebApplication.CreateBuilder(args);
 // token(jWT)
 builder.Services.AddScoped<TokenService>();
 
-// TODO:add service scopes
+builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddScoped<ICategoryService, CategoryService>();
+builder.Services.AddScoped<IOrderService, OrderService>();
+builder.Services.AddScoped<IPaymentService, PaymentService>();
+builder.Services.AddScoped<IProductService, ProductService>();
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
