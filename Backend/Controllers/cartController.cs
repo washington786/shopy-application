@@ -1,7 +1,6 @@
 using Backend.DTOs.Requests.Cart;
 using Backend.Models;
 using Backend.Services.Interfaces;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
