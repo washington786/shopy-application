@@ -1,6 +1,7 @@
 using System.Text;
 using Backend.Data;
 using Backend.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -42,6 +43,23 @@ public class DependencyHelper(IConfiguration configuration, IServiceCollection s
                     Array.Empty<string>()
                 }
             });
+
+            options.TagActionsBy(api =>
+            {
+                if (api.ActionDescriptor.EndpointMetadata.OfType<AuthorizeAttribute>().Any())
+                {
+                    var roles = api.ActionDescriptor.EndpointMetadata
+                        .OfType<AuthorizeAttribute>()
+                        .SelectMany(a => a.Roles?.Split(',') ?? [])
+                        .Distinct()
+                        .ToList();
+
+                    if (roles.Count > 0)
+                        return [$"{string.Join("/", roles)}"];
+                }
+                return ["Public"];
+            });
+
         });
     }
 
