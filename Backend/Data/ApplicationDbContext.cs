@@ -11,6 +11,27 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     {
         base.OnModelCreating(builder);
 
+        // Product.Price
+        builder.Entity<Product>()
+            .Property(p => p.Price)
+            .HasPrecision(18, 2);
+
+        // Order.TotalAmount
+        builder.Entity<Order>()
+            .Property(o => o.TotalAmount)
+            .HasPrecision(18, 2);
+
+        // OrderItem.UnitPrice
+        builder.Entity<OrderItem>()
+            .Property(oi => oi.UnitPrice)
+            .HasPrecision(18, 2);
+
+        // Payment.Amount
+        builder.Entity<Payment>()
+            .Property(p => p.Amount)
+            .HasPrecision(18, 2);
+
+        // mapping
         builder.Entity<Product>(entity =>
         {
             entity.

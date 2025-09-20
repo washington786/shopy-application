@@ -6,7 +6,8 @@ COPY backend/ShopZen.WebApi/*.csproj ./backend/ShopZen.WebApi/
 RUN dotnet restore backend/ShopZen.WebApi/ShopZen.WebApi.csproj
 
 # Copy everything else
-COPY backend/ShopZen.WebApi/ ./backend/ShopZen.WebApi/
+# Backend/Backend.csproj
+COPY Backend/ShopZen.WebApi/ ./backend/ShopZen.WebApi/
 WORKDIR /src/backend/ShopZen.WebApi
 RUN dotnet publish -c Release -o /app/publish
 
