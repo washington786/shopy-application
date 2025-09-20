@@ -1,9 +1,9 @@
 using Backend.DTOs.Requests.Products;
 using Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
+// ToDO: pagination
 namespace Backend.Controllers
 {
     [Route("api/[controller]")]
