@@ -33,6 +33,10 @@ dependencyUtilHelper.IdentityAdding();
 dependencyUtilHelper.AddCors();
 dependencyUtilHelper.AddAuthentication();
 
+builder.WebHost.UseKestrel()
+    .UseUrls("http://0.0.0.0:" + (Environment.GetEnvironmentVariable("PORT") ?? "5000"));
+
+
 var app = builder.Build();
 
 // cors

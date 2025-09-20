@@ -44,21 +44,21 @@ public class DependencyHelper(IConfiguration configuration, IServiceCollection s
                 }
             });
 
-            options.TagActionsBy(api =>
-            {
-                if (api.ActionDescriptor.EndpointMetadata.OfType<AuthorizeAttribute>().Any())
-                {
-                    var roles = api.ActionDescriptor.EndpointMetadata
-                        .OfType<AuthorizeAttribute>()
-                        .SelectMany(a => a.Roles?.Split(',') ?? [])
-                        .Distinct()
-                        .ToList();
+            // options.TagActionsBy(api =>
+            // {
+            //     if (api.ActionDescriptor.EndpointMetadata.OfType<AuthorizeAttribute>().Any())
+            //     {
+            //         var roles = api.ActionDescriptor.EndpointMetadata
+            //             .OfType<AuthorizeAttribute>()
+            //             .SelectMany(a => a.Roles?.Split(',') ?? [])
+            //             .Distinct()
+            //             .ToList();
 
-                    if (roles.Count > 0)
-                        return [$"{string.Join("/", roles)}"];
-                }
-                return ["Public"];
-            });
+            //         if (roles.Count > 0)
+            //             return [$"{string.Join("/", roles)}"];
+            //     }
+            //     return ["Public"];
+            // });
 
         });
     }
