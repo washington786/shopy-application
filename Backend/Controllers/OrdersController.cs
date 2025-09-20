@@ -1,6 +1,7 @@
 using Backend.DTOs.Requests.Order;
 using Backend.Models;
 using Backend.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -54,6 +55,7 @@ namespace Backend.Controllers
             return Ok(res);
         }
 
+        [Authorize(Roles = "Admin,StoreManager")]
         [HttpPut("status")]
         public async Task<ActionResult> UpdateOrderStatusAsync([FromBody] UpdateOrderRequest updateOrder)
         {
