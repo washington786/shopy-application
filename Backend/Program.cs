@@ -48,4 +48,11 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 
+// seeding
+using (var scope = app.Services.CreateAsyncScope())
+{
+    var roleSeeder = scope.ServiceProvider.GetRequiredService<IRoleService>();
+    await roleSeeder.CreateRoleSeeding();
+}
+
 app.Run();
