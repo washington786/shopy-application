@@ -5,8 +5,6 @@
 A production-ready eCommerce application built for portfolio demonstration.
 Supports roles (User, StoreManager, Admin), cart, checkout, payments, and more.
 
----
-
 ## Structure
 
 ShopZen/
