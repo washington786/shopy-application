@@ -1,5 +1,6 @@
 import { inject, Injectable } from '@angular/core';
 import { ApiService } from './api-service';
+import { AddToCartRequest, CartItemDto, UpdateCartRequest } from '../models/cart.model';
 
 @Injectable({
   providedIn: 'root'
@@ -7,15 +8,25 @@ import { ApiService } from './api-service';
 
 export class CartService {
   private apiService = inject(ApiService);
-  private authUrl = `/cart/`;
+  private url = `/cart`;
 
-  addToCart() { }
+  addToCart(request: AddToCartRequest) {
+    return this.apiService.post<CartItemDto>(`${this.url}`, request);
+  }
 
-  loadCartItems() { }
+  loadCartItems() {
+    return this.apiService.get<CartItemDto[]>(`${this.url}/my-cart-items`);
+  }
 
-  updateCartItems() { }
+  updateCartItems(id: number, request: UpdateCartRequest) {
+    return this.apiService.put<CartItemDto>(`${this.url}/${id}`, request);
+  }
 
-  removeCartItem() { }
+  removeCartItem(id: number) {
+    return this.apiService.delete<void>(`${this.url}/${id}`);
+  }
 
-  clearCart() { }
+  clearCart() {
+    return this.apiService.delete<void>(`${this.url}/clear-cart`);
+  }
 }

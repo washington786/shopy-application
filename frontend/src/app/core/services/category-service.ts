@@ -1,20 +1,31 @@
 import { inject, Injectable } from '@angular/core';
 import { ApiService } from './api-service';
+import { CategoryDto, CreateCategoryRequest, UpdateCategoryRequest } from '../models/category.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class CategoryService {
   private apiService = inject(ApiService);
-  private authUrl = `/categories/`;
+  private url = `/categories`;
 
-  getAllCategories() { }
+  getAllCategories() {
+    return this.apiService.get<CategoryDto[]>(`${this.url}`)
+  }
 
-  getCategoryItem() { }
+  getCategoryItem(id: number) {
+    return this.apiService.get<CategoryDto>(`${this.url}/${id}`);
+  }
 
-  updateCategoryItem() { }
+  updateCategoryItem(id: number, request: UpdateCategoryRequest) {
+    return this.apiService.put<CategoryDto>(`${this.url}/${id}`, request);
+  }
 
-  createCategoryItem() { }
+  createCategoryItem(request: CreateCategoryRequest) {
+    return this.apiService.post<CategoryDto>(`${this.url}`, request);
+  }
 
-  removeCategoryItem() { }
+  removeCategoryItem(id: number) {
+    return this.apiService.delete<void>(`${this.url}/${id}`)
+  }
 }
