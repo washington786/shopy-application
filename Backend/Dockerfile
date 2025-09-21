@@ -2,12 +2,11 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
 # Copy solution and project files
-COPY backend/ShopZen.WebApi/*.csproj ./backend/ShopZen.WebApi/
-RUN dotnet restore backend/ShopZen.WebApi/ShopZen.WebApi.csproj
+COPY backend/Backend.WebApi/*.csproj ./backend/Backend.WebApi/
+RUN dotnet restore backend/Backend.WebApi/ShopZen.WebApi.csproj
 
 # Copy everything else
-# Backend/Backend.csproj
-COPY Backend/ShopZen.WebApi/ ./backend/ShopZen.WebApi/
+COPY Backend/Backend.WebApi/ ./backend/Backend.WebApi/
 WORKDIR /src/backend/ShopZen.WebApi
 RUN dotnet publish -c Release -o /app/publish
 
