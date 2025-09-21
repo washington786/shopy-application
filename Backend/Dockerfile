@@ -1,22 +1,31 @@
+# Build stage
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
 # Copy solution and project files
-COPY backend/Backend.WebApi/*.csproj ./backend/Backend.WebApi/
-RUN dotnet restore backend/Backend.WebApi/ShopZen.WebApi.csproj
+COPY Backend.sln .
+COPY Backend/Shopy.WebApi/*.csproj ./Backend/Shopy.WebApi/
 
-# Copy everything else
-COPY Backend/Backend.WebApi/ ./backend/Backend.WebApi/
-WORKDIR /src/backend/ShopZen.WebApi
+# Restore dependencies
+RUN dotnet restore Backend.sln
+
+# Copy all source code
+COPY Backend/Shopy.WebApi/ ./Backend/Shopy.WebApi/
+
+# Publish
+WORKDIR /src/Backend/ShopZen.WebApi
 RUN dotnet publish -c Release -o /app/publish
 
-# Final stage: runtime
+# Runtime stage
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS runtime
 WORKDIR /app
+
+# Copy published output
 COPY --from=build /app/publish .
 
-# Expose port (Render uses 8080)
+# Expose port
 EXPOSE 8080
 ENV ASPNETCORE_URLS=http://+:8080
 
-ENTRYPOINT ["dotnet", "ShopZen.WebApi.dll"]
+# Entry point
+ENTRYPOINT ["dotnet", "Backend.dll"]

@@ -7,6 +7,9 @@ using TaskManager.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// IIS
+builder.WebHost.UseIISIntegration();
+
 // token(jWT)
 builder.Services.AddScoped<TokenService>();
 
@@ -37,8 +40,8 @@ dependencyUtilHelper.AddCors();
 dependencyUtilHelper.AddAuthentication();
 
 // port
-var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
-builder.WebHost.UseKestrel().UseUrls($"http://*:{port}");
+// var port = Environment.GetEnvironmentVariable("PORT") ?? "8000";
+// builder.WebHost.UseKestrel().UseUrls($"http://*:{port}");
 
 var app = builder.Build();
 
