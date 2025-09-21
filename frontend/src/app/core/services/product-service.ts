@@ -1,15 +1,14 @@
-import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { environment } from '../../../environments/environment';
+import { ApiService } from './api-service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class ProductService {
-  private http = inject(HttpClient);
-  private authUrl = `${environment.apiUrl}/products/`;
+  private apiService = inject(ApiService);
+  private productsUrl = `/products/`;
 
-  loadProducts() { }
+  getAllProducts() { }
 
   getProduct() { }
 

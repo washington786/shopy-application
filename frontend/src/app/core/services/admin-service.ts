@@ -4,17 +4,11 @@ import { ApiService } from './api-service';
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService {
+export class AdminService {
   private apiService = inject(ApiService);
-  private authUrl = `/auth/`;
+  private authUrl = `/admin/`;
 
-  loginUser() { }
+  loadAllUsers() { }
 
-  registerUser() { }
-
-  getUserProfile() { }
-
-  updateUserProfile() { }
-
-  deactivateUserProfile() { }
+  updateUserRole() { }
 }

@@ -4,17 +4,9 @@ import { ApiService } from './api-service';
 @Injectable({
   providedIn: 'root'
 })
-export class AuthService {
+export class CheckoutService {
   private apiService = inject(ApiService);
-  private authUrl = `/auth/`;
+  private authUrl = `/payment/`;
 
-  loginUser() { }
-
-  registerUser() { }
-
-  getUserProfile() { }
-
-  updateUserProfile() { }
-
-  deactivateUserProfile() { }
+  CreatePayment() { }
 }

@@ -1,14 +1,13 @@
-import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
-import { environment } from '../../../environments/environment';
+import { ApiService } from './api-service';
 
 @Injectable({
   providedIn: 'root'
 })
 
 export class CartService {
-  private http = inject(HttpClient);
-  private authUrl = `${environment.apiUrl}/cart/`;
+  private apiService = inject(ApiService);
+  private authUrl = `/cart/`;
 
   addToCart() { }
 

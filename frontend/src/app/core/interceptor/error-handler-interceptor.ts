@@ -7,9 +7,9 @@ export const errorHandlerInterceptor: HttpInterceptorFn = (req, next) => {
   const router = inject(Router);
 
   return next(req).pipe(catchError((error: HttpErrorResponse) => {
-    if (error.status == 401) {
+    if (error.status === 401 && !req.url.includes('/auth/login')) {
       localStorage.removeItem("token");
-      router.navigate(["/login"])
+      router.navigate(["/auth/login"])
     }
     return throwError(() => error);
   }))
