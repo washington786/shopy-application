@@ -39,8 +39,13 @@ export class AuthService {
     if (!token) return [];
     try {
       const decoded: JwtPayload = jwtDecode(token);
+      if (Date.now() >= decoded.exp * 1000) {
+        localStorage.removeItem("token");
+        return [];
+      }
       return Array.isArray(decoded.role) ? decoded.role : []
     } catch (error) {
+      localStorage.removeItem("token");
       return []
     }
   }
