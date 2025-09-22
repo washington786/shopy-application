@@ -1,6 +1,7 @@
 import { inject, Injectable } from '@angular/core';
 import { ApiService } from './api-service';
-import { AuthResponse, LoginRequest, RegisterRequest, updateProfileRequest, UserDto } from '../models/auth.model';
+import { AuthResponse, JwtPayload, LoginRequest, RegisterRequest, updateProfileRequest, UserDto } from '../models/auth.model';
+import { jwtDecode } from 'jwt-decode';
 
 @Injectable({
   providedIn: 'root'
@@ -27,5 +28,24 @@ export class AuthService {
 
   deactivateUserProfile(id: number) {
     return this.apiService.delete(`${this.url}/${id}`);
+  }
+
+  isAuthenticated() {
+    return !!localStorage.getItem("token");
+  }
+
+  getUserRoles() {
+    const token = localStorage.getItem("token");
+    if (!token) return [];
+    try {
+      const decoded: JwtPayload = jwtDecode(token);
+      return Array.isArray(decoded.role) ? decoded.role : []
+    } catch (error) {
+      return []
+    }
+  }
+
+  logout() {
+    localStorage.removeItem("token");
   }
 }

@@ -10,8 +10,8 @@ export class AdminService {
   private apiService = inject(ApiService);
   private url = `/admin`;
 
-  loadAllUsers() {
-    return this.apiService.get<UserDto[]>(`/all-users`);
+  loadAllUsers(page: number = 1, pageSize: number = 10) {
+    return this.apiService.get<UserDto[]>(`/all-users?page=${page}&pageSize=${pageSize}`);
   }
 
   updateUserRole(request: updateRoleRequest, id: string) {
