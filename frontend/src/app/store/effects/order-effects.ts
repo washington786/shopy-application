@@ -1,5 +1,4 @@
 import { inject, Injectable } from "@angular/core";
-import { Router } from "@angular/router";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { OrderService } from "../../core/services/order-service";
 import { addOrderAction, AddOrderFailure, AddOrderSuccess, loadOrderByidAction, loadOrderByidFailure, loadOrderByidSuccess, loadOrdersAction, loadOrdersFailure, loadOrdersSuccess, updateOrderAction, updateOrderFailure, updateOrderSuccess } from "../actions/order-actions";
@@ -7,7 +6,6 @@ import { catchError, exhaustMap, map, of } from "rxjs";
 
 @Injectable()
 export class OrderEffects {
-  private router = inject(Router);
   private actions$ = inject(Actions);
 
   private service = inject(OrderService);
@@ -22,7 +20,7 @@ export class OrderEffects {
 
   loadOrders$ = createEffect(() => this.actions$.pipe(
     ofType(loadOrdersAction),
-    exhaustMap(action => this.service.getAllOrders().pipe(
+    exhaustMap(() => this.service.getAllOrders().pipe(
       map(res => loadOrdersSuccess({ response: res })),
       catchError(error => of(loadOrdersFailure(error)))
     ))

@@ -1,5 +1,4 @@
 import { inject, Injectable } from "@angular/core";
-import { Router } from "@angular/router";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { ProductService } from "../../core/services/product-service";
 import { catchError, exhaustMap, map, of } from "rxjs";
@@ -7,14 +6,13 @@ import { createProduct, createProductFailure, createProductSuccess, loadProductB
 
 @Injectable()
 export class ProductEffects {
-  private router = inject(Router);
   private actions$ = inject(Actions);
 
   private service = inject(ProductService);
 
   loadAllProducts$ = createEffect(() => this.actions$.pipe(
     ofType(loadProducts),
-    exhaustMap(action => this.service.getAllProducts().pipe(
+    exhaustMap(() => this.service.getAllProducts().pipe(
       map(res => loadProductsSuccess({ response: res })),
       catchError(error => of(loadProductsFailure(error)))
     ))
@@ -38,7 +36,7 @@ export class ProductEffects {
   removeProduct$ = createEffect(() => this.actions$.pipe(
     ofType(removeProduct),
     exhaustMap(action => this.service.removeProduct(action.productId).pipe(
-      map(res => removeProductSuccess()),
+      map(() => removeProductSuccess()),
       catchError(error => of(removeProductFailure(error)))
     ))
   ));
