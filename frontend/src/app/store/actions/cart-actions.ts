@@ -17,7 +17,7 @@ export const removeItemCartSuccess = createAction("[Cart Page] Remove Success")
 export const removeItemCartFailure = createAction("[Cart Page] Remove Failure", props<{ error: string }>())
 
 // Update
-export const updateItemCartAction = createAction("[Cart Page] Update", props<{ payload: UpdateCartRequest }>())
+export const updateItemCartAction = createAction("[Cart Page] Update", props<{ request: UpdateCartRequest }>())
 export const updateItemCartSuccess = createAction("[Cart Page] Update Success", props<{ response: CartItemDto }>())
 export const updateItemCartFailure = createAction("[Cart Page] Update Failure", props<{ error: string }>())
 
