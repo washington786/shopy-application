@@ -26,7 +26,7 @@ export class AuthService {
     return this.apiService.put<UserDto>(`${this.url}/me`, request);
   }
 
-  deactivateUserProfile(id: number) {
+  deactivateUserProfile(id: string) {
     return this.apiService.delete(`${this.url}/${id}`);
   }
 
