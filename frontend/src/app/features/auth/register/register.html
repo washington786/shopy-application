@@ -1,0 +1,145 @@
+<div class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+  <div class="max-w-md w-full space-y-8">
+    <div>
+      <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
+        Create your account
+      </h2>
+      <p class="mt-2 text-center text-sm text-gray-600">
+        Or
+        <a (click)="goToLogin()" class="font-medium text-indigo-600 hover:text-indigo-500 cursor-pointer">
+          sign in to your existing account
+        </a>
+      </p>
+    </div>
+
+    <form [formGroup]="form" (ngSubmit)="onSubmit()" class="mt-8 space-y-6">
+      <!-- Error Message -->
+       @if (errorMessage) {
+         <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+           {{ errorMessage }}
+         </div>
+       }
+
+      <!-- Full Name -->
+      <div>
+        <label for="fullName" class="block text-sm font-medium text-gray-700">Full Name</label>
+        <div class="mt-1">
+          <input
+            id="fullName"
+            type="text"
+            formControlName="fullName"
+            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+            placeholder="John Doe"
+          />
+          @if (form.get('fullName')?.invalid && (form.get('fullName')?.dirty || form.get('fullName')?.touched)) {
+
+            <div class="text-red-500 text-sm mt-1">
+              @if (form.get('fullName')?.errors?.['required']) {
+
+                <div >Full name is required</div>
+              }
+
+              @if (form.get('fullName')?.errors?.['minlength']) {
+                <div>Full name must be at least 2 characters</div>
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Email -->
+      <div>
+        <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
+        <div class="mt-1">
+          <input
+            id="email"
+            type="email"
+            formControlName="email"
+            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+            placeholder="you@example.com"
+          />
+          @if (form.get('email')?.invalid && (form.get('email')?.dirty || form.get('email')?.touched)) {
+            <div class="text-red-500 text-sm mt-1">
+              @if (form.get('email')?.errors?.['required']) {
+
+                <div >Email is required</div>
+              }
+              @if (form.get('email')?.errors?.['email']) {
+                <div >Please enter a valid email</div>
+
+              }
+            </div>
+          }
+        </div>
+      </div>
+
+      <!-- Password -->
+      <div>
+        <label for="password" class="block text-sm font-medium text-gray-700">Password</label>
+        <div class="mt-1">
+          <input
+            id="password"
+            type="password"
+            formControlName="password"
+            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+            placeholder="••••••••"
+          />
+          @if (form.get('password')?.invalid && (form.get('password')?.dirty || form.get('password')?.touched)) {
+            <div  class="text-red-500 text-sm mt-1">
+              @if (form.get('password')?.errors?.['required']) {
+
+                <div >Password is required</div>
+              }
+              @if (form.get('password')?.errors?.['minlength']) {
+                <div>Password must be at least 6 characters</div>
+
+              }
+            </div>
+
+          }
+        </div>
+      </div>
+
+      <!-- Confirm Password -->
+      <!-- <div>
+        <label for="confirmPassword" class="block text-sm font-medium text-gray-700">Confirm Password</label>
+        <div class="mt-1">
+          <input
+            id="confirmPassword"
+            type="password"
+            formControlName="confirmPassword"
+            class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+            placeholder="••••••••"
+          />
+
+          <div *ngIf="form.get('confirmPassword')?.invalid && (form.get('confirmPassword')?.dirty || form.get('confirmPassword')?.touched)" class="text-red-500 text-sm mt-1">
+            <div *ngIf="form.get('confirmPassword')?.errors?.['required']">Please confirm your password</div>
+          </div>
+          <div *ngIf="form.errors?.['passwordMismatch'] && (form.get('confirmPassword')?.dirty || form.get('confirmPassword')?.touched)" class="text-red-500 text-sm mt-1">
+            Passwords do not match
+          </div>
+        </div>
+      </div> -->
+
+      <!-- Submit Button -->
+      <div>
+        <button
+          type="submit"
+          [disabled]="isLoading"
+          class="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+        >
+        @if (isLoading) {
+          <span class="flex items-center">
+            <app-loading-spinner></app-loading-spinner>
+            <span class="ml-2">Creating account...</span>
+          </span>
+
+        }@else {
+          <span>Create account</span>
+
+        }
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

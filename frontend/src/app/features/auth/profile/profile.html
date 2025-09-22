@@ -1,0 +1,133 @@
+<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+  <div class="bg-white shadow sm:rounded-lg">
+    <div class="px-4 py-5 sm:px-6">
+      <h3 class="text-lg leading-6 font-medium text-gray-900">User Profile</h3>
+      <p class="mt-1 max-w-2xl text-sm text-gray-500">Manage your account settings and preferences.</p>
+    </div>
+    <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
+      <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-6">
+        <!-- Success/Error Messages -->
+         @if (successMessage) {
+           <div class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded">
+             {{ successMessage }}
+           </div>
+         }
+
+        @if (errorMessage) {
+          <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
+            {{ errorMessage }}
+          </div>
+        }
+
+        <!-- Full Name -->
+        <div>
+          <label for="fullName" class="block text-sm font-medium text-gray-700">Full Name</label>
+          <div class="mt-1">
+            <input
+              id="fullName"
+              type="text"
+              formControlName="fullName"
+              [readonly]="!isEditing"
+              class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+            />
+            @if (form.get('fullName')?.invalid && (form.get('fullName')?.dirty || form.get('fullName')?.touched)) {
+              <div class="text-red-500 text-sm mt-1">
+                @if (form.get('fullName')?.errors?.['required']) {
+                  <div>Full name is required</div>
+                }
+                @if (form.get('fullName')?.errors?.['minlength']) {
+                  <div>Full name must be at least 2 characters</div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Email -->
+        <div>
+          <label for="email" class="block text-sm font-medium text-gray-700">Email address</label>
+          <div class="mt-1">
+            <input
+              id="email"
+              type="email"
+              formControlName="email"
+              [readonly]="!isEditing"
+              class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+            />
+            @if (form.get('email')?.invalid && (form.get('email')?.dirty || form.get('email')?.touched)) {
+              <div class="text-red-500 text-sm mt-1">
+                @if (form.get('email')?.errors?.['required']) {
+                  <div>Email is required</div>
+                }
+                @if (form.get('email')?.errors?.['email']) {
+                  <div>Please enter a valid email</div>
+                }
+              </div>
+            }
+          </div>
+        </div>
+
+        <!-- Roles -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700">Roles</label>
+          <div class="mt-1">
+            <div class="flex flex-wrap gap-2">
+              @for (role of  mockUser.roles; track $index) {
+                <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
+                  {{ role }}
+                </span>
+              }
+            </div>
+          </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="flex justify-end space-x-3">
+          <button
+            type="button"
+            (click)="logout()"
+            class="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+          >
+            Logout
+          </button>
+          @if (!isEditing) {
+            <button
+              type="button"
+              (click)="toggleEdit()"
+              class="px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+            >
+              Edit Profile
+            </button>
+          }
+          @if (isEditing) {
+
+            <div class="flex space-x-3">
+              <button
+                type="button"
+                (click)="toggleEdit()"
+                class="px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+                Cancel
+              </button>
+              <button
+                type="submit"
+                [disabled]="isLoading"
+                class="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              >
+              @if (isLoading) {
+                <span class="flex items-center">
+                  <app-loading-spinner></app-loading-spinner>
+                  <span class="ml-2">Saving...</span>
+                </span>
+
+              }@else {
+                <span >Save Changes</span>
+              }
+              </button>
+            </div>
+          }
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
