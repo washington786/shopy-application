@@ -1,0 +1,48 @@
+<header class="bg-white shadow-sm">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex justify-between items-center h-16">
+      <!-- Logo -->
+      <div class="flex-shrink-0">
+        <a routerLink="/" class="text-2xl font-bold text-indigo-600">Shopy</a>
+      </div>
+
+      <!-- Nav Links -->
+      <nav class="hid den md:flex space-x-8">
+        <a routerLink="/products" class="text-gray-700 hover:text-indigo-600">Products</a>
+        <a routerLink="/categories" class="text-gray-700 hover:text-indigo-600">Categories</a>
+        <a routerLink="/orders" class="text-gray-700 hover:text-indigo-600">Orders</a>
+      </nav>
+
+      <!-- Right Side -->
+      <div class="flex items-center space-x-4">
+        <!-- Cart -->
+        <button
+          mat-icon-button
+          class="relative"
+          (click)="goToCart()"
+          [disabled]="!(cartCount$ | async)"
+        >
+          <mat-icon>shopping_cart</mat-icon>
+          <app-cart-badge-component></app-cart-badge-component>
+        </button>
+
+        <!-- User Menu -->
+         @if (isAuthenticated$|async) {
+            <button mat-button>
+            <mat-icon>account_circle</mat-icon>
+            {{ (user$ | async)?.fullName }}
+          </button>
+         }@else {
+           <mat-menu #userMenu="matMenu">
+            <button mat-menu-item (click)="goToProfile()">Profile</button>
+            <button mat-menu-item (click)="logout()">Logout</button>
+          </mat-menu>
+         }
+
+        <ng-template #guestMenu>
+          <button mat-button (click)="goToLogin()">Login</button>
+        </ng-template>
+      </div>
+    </div>
+  </div>
+</header>
