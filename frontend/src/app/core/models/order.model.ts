@@ -20,3 +20,10 @@ export interface OrderDto {
 export interface CreateOrderRequest {
   // TODO:adding shipping address, etc..
 }
+
+export interface UpdateOrderStatus {
+  status: string,
+  orderId: number,
+  updatedBy: number,
+  notes: string
+}
