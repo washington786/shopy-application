@@ -10,7 +10,7 @@ export class ProductService {
   private productsUrl = `/products`;
 
   getAllProducts() {
-    this.apiService.get<ProductDto[]>(`${this.productsUrl}/all-products`);
+    return this.apiService.get<ProductDto[]>(`${this.productsUrl}/all-products`);
   }
 
   getProduct(id: number) {
