@@ -25,5 +25,5 @@ export interface UpdateOrderStatus {
   status: string,
   orderId: number,
   updatedBy: number,
-  notes: string
+  notes?: string
 }
