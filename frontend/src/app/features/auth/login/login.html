@@ -1,27 +1,42 @@
 <div class="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
   <h2 class="text-2xl font-bold mb-6 text-center">Login to Shopy</h2>
 
+  @if (error$|async) {
+    <div class="bg-red-400 text-white px-10 py-4 w-full my-3">
+      {{error$|async}}
+    </div>
+  }
+
   <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
     <mat-form-field appearance="fill" class="w-full">
       <mat-label>Email</mat-label>
       <input matInput formControlName="email" type="email" />
-      <mat-error *ngIf="form.get('email')?.errors?.['required']">
-        Email is required
-      </mat-error>
-      <mat-error *ngIf="form.get('email')?.errors?.['email']">
-        Please enter a valid email
-      </mat-error>
+      @if (emailRequiredError()) {
+        <mat-error>
+          Email is required
+        </mat-error>
+      }
+
+      @if(emailValidError()){
+        <mat-error>
+          Please enter a valid email
+        </mat-error>
+      }
     </mat-form-field>
 
     <mat-form-field appearance="fill" class="w-full">
       <mat-label>Password</mat-label>
       <input matInput formControlName="password" type="password" />
-      <mat-error *ngIf="form.get('password')?.errors?.['required']">
-        Password is required
-      </mat-error>
-      <mat-error *ngIf="form.get('password')?.errors?.['minlength']">
-        Password must be at least 6 characters
-      </mat-error>
+      @if (passwordRequiredError()) {
+        <mat-error>
+          Password is required
+        </mat-error>
+      }
+      @if(passwordMinLengthError()){
+        <mat-error>
+          Password must be at least 6 characters
+        </mat-error>
+      }
     </mat-form-field>
 
     <button
@@ -30,7 +45,14 @@
       class="w-full bg-blue-600 px-10 py-3 uppercase text-white"
       [disabled]="form.invalid"
     >
-      Login
+     @if (!isLoading$) {
+      <span class="text-sm">
+        <span>loading</span>
+        <app-loading-spinner></app-loading-spinner>
+      </span>
+     }@else {
+      <span class="text-lg"> Login</span>
+     }
     </button>
   </form>
 

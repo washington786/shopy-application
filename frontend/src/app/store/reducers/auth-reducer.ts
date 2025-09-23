@@ -22,7 +22,11 @@ const initialState: AuthState = {
 export const authReducer = createReducer(initialState,
   // login
   on(loginAction, (state) => ({ ...state, loading: true, error: null })),
-  on(loginSuccess, (state, { response }) => ({ ...state, loading: false, error: null, user: response.userDto, token: response.token })),
+  on(loginSuccess, (state, { response }) => {
+    localStorage.setItem("token", response.token)
+    return { ...state, loading: false, error: null, user: response.userDto, token: response.token }
+  }
+  ),
   on(loginFailure, (state, { error }) => ({ ...state, loading: false, error: error })),
 
   // register

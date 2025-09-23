@@ -7,7 +7,7 @@ import { catchError, map, Observable, retry, throwError } from 'rxjs';
   providedIn: 'root'
 })
 export class ApiService {
-  private baseUrl = `${environment.apiUrl}/api`;
+  private baseUrl = `${environment.apiUrl}`;
   private http = inject(HttpClient);
 
   get<T>(url: string): Observable<T> {

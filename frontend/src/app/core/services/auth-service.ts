@@ -8,7 +8,7 @@ import { jwtDecode } from 'jwt-decode';
 })
 export class AuthService {
   private apiService = inject(ApiService);
-  private url = `/auth`;
+  private url = `auth`;
 
   loginUser(request: LoginRequest) {
     return this.apiService.post<AuthResponse>(`${this.url}/login`, request);
