@@ -1,7 +1,7 @@
 <div class="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
   <h2 class="text-2xl font-bold mb-6 text-center">Login to Shopy</h2>
 
-  @if (error$|async) {
+  @if (error$|async; as error) {
     <div class="bg-red-400 text-white px-10 py-4 w-full my-3">
       {{error$|async}}
     </div>
@@ -45,8 +45,8 @@
       class="w-full bg-blue-600 px-10 py-3 uppercase text-white"
       [disabled]="form.invalid"
     >
-     @if (!isLoading$) {
-      <span class="text-sm">
+     @if (isLoading$|async) {
+      <span class="text-sm flex gap-3">
         <span>loading</span>
         <app-loading-spinner></app-loading-spinner>
       </span>

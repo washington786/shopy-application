@@ -9,6 +9,7 @@ import { selectAuthError, selectAuthLoading, selectIsAuthenticated } from '../..
 import { loginAction } from '../../../store/actions/auth-actions';
 import { AsyncPipe } from '@angular/common';
 import { LoadingSpinner } from "../../../shared/loading-spinner/loading-spinner";
+import { LoginRequest } from '../../../core/models/auth.model';
 @Component({
   selector: 'app-login',
   imports: [ReactiveFormsModule, MatInputModule, MatFormFieldModule, AsyncPipe, LoadingSpinner],
@@ -54,12 +55,10 @@ export class Login implements OnInit {
 
   onSubmit() {
     if (!this.form.valid) return;
-    console.log("login: \n", this.form.value);
-
-    this.store.dispatch(loginAction(this.form.value));
+    const loginRequest: LoginRequest = this.form.value;
+    console.log("login: \n", loginRequest);
+    this.store.dispatch(loginAction({ loginRequest }));
   }
-
-
 
   goToRegister() {
     this.router.navigate(["/auth/register"]);

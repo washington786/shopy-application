@@ -3,7 +3,7 @@ import { Router } from "@angular/router";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { AuthService } from "../../core/services/auth-service";
 import { catchError, exhaustMap, map, of, tap } from "rxjs";
-import { deactivateProfileAction, deactivateProfileFailure, deactivateProfileSuccess, loadProfileAction, loadProfileSuccess, loginAction, loginFailure, loginSuccess, logoutAction, registerAction, registerfailure, registerSuccess, updateProfileAction, updateProfileFailure, updateProfileSuccess } from "../actions/auth-actions";
+import { deactivateProfileAction, deactivateProfileFailure, deactivateProfileSuccess, loadProfileAction, loadProfileFailure, loadProfileSuccess, loginAction, loginFailure, loginSuccess, logoutAction, registerAction, registerfailure, registerSuccess, updateProfileAction, updateProfileFailure, updateProfileSuccess } from "../actions/auth-actions";
 
 @Injectable()
 export class AuthEffects {
@@ -15,38 +15,38 @@ export class AuthEffects {
   loginUser$ = createEffect(() => this.actions$.pipe(
     ofType(loginAction),
     exhaustMap(
-      action => this.service.loginUser(action.payload).pipe(
+      action => this.service.loginUser(action.loginRequest).pipe(
         map(res => loginSuccess({ response: res })),
-        catchError(error => of(loginFailure({ error: error })))
+        catchError(error => of(loginFailure({ error })))
       )
     )
   ));
   registerUser$ = createEffect(() => this.actions$.pipe(
     ofType(registerAction),
-    exhaustMap(action => this.service.registerUser(action.payload).pipe(
+    exhaustMap(action => this.service.registerUser(action.registerRequest).pipe(
       map(res => registerSuccess({ response: res })),
-      catchError(error => of(registerfailure(error)))
+      catchError(error => of(registerfailure({ error })))
     ))
   ));
   loadUserProfile$ = createEffect(() => this.actions$.pipe(
     ofType(loadProfileAction),
     exhaustMap(action => this.service.getUserProfile().pipe(
       map(res => loadProfileSuccess({ response: res })),
-      catchError(error => of(registerfailure(error)))
+      catchError(error => of(loadProfileFailure({ error })))
     ))
   ));
   updateUserProfile$ = createEffect(() => this.actions$.pipe(
     ofType(updateProfileAction),
-    exhaustMap(action => this.service.updateUserProfile(action.payload).pipe(
+    exhaustMap(action => this.service.updateUserProfile(action.updateProfileRequest).pipe(
       map(res => updateProfileSuccess({ response: res })),
-      catchError(error => of(updateProfileFailure(error)))
+      catchError(error => of(updateProfileFailure({ error })))
     ))
   ));
   deactivateUserProfile$ = createEffect(() => this.actions$.pipe(
     ofType(deactivateProfileAction),
     exhaustMap(action => this.service.deactivateUserProfile(action.userId).pipe(
       map(res => deactivateProfileSuccess()),
-      catchError(error => of(deactivateProfileFailure(error)))
+      catchError(error => of(deactivateProfileFailure({ error })))
     ))
   ));
 
