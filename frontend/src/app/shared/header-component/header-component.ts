@@ -29,11 +29,11 @@ export class HeaderComponent {
   }
 
   goToCart() {
-    this.router.navigate(["/cart"]);
+    this.router.navigate(["/app/cart"]);
   }
 
   goToProfile() {
-    this.router.navigate(["/profile"]);
+    this.router.navigate(["/app/profile"]);
   }
 
   goToLogin() {
