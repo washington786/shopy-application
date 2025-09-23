@@ -1,11 +1,11 @@
-import { Component, computed, inject, OnInit } from '@angular/core';
+import { Component, computed, DestroyRef, inject, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms'
 import { Router } from '@angular/router';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field'
 import { Observable } from 'rxjs';
 import { Store } from '@ngrx/store';
-import { selectAuthError, selectAuthLoading } from '../../../store/selectors/auth-selector';
+import { selectAuthError, selectAuthLoading, selectIsAuthenticated } from '../../../store/selectors/auth-selector';
 import { loginAction } from '../../../store/actions/auth-actions';
 import { AsyncPipe } from '@angular/common';
 import { LoadingSpinner } from "../../../shared/loading-spinner/loading-spinner";
@@ -24,8 +24,11 @@ export class Login implements OnInit {
 
   store = inject(Store);
 
+  destroyRef = inject(DestroyRef);
+
   isLoading$!: Observable<boolean>;
   error$!: Observable<string | null>;
+  isAuthenticated$!: Observable<boolean>
 
   ngOnInit(): void {
     this.form = this.formBuilder.group({
@@ -34,6 +37,14 @@ export class Login implements OnInit {
     });
     this.error$ = this.store.select(selectAuthError);
     this.isLoading$ = this.store.select(selectAuthLoading);
+    this.isAuthenticated$ = this.store.select(selectIsAuthenticated);
+
+    let sub = this.isAuthenticated$.subscribe(auth => {
+      if (auth) {
+        this.router.navigate(["/app/products"])
+      }
+    });
+    this.destroyRef.onDestroy(() => sub.unsubscribe());
   }
 
   passwordRequiredError = computed(() => this.form.get('password')?.errors?.["required"])
@@ -43,8 +54,9 @@ export class Login implements OnInit {
 
   onSubmit() {
     if (!this.form.valid) return;
+    console.log("login: \n", this.form.value);
+
     this.store.dispatch(loginAction(this.form.value));
-    this.router.navigate(["/app"])
   }
 
 
