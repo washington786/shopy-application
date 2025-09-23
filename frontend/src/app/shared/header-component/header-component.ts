@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Store } from '@ngrx/store';
 import { selectCartCount } from '../../store/selectors/cart-selector';
@@ -16,7 +16,7 @@ import { MatMenuModule } from '@angular/material/menu';
   styleUrl: './header-component.css'
 })
 
-export class HeaderComponent {
+export class HeaderComponent implements OnInit {
   store = inject(Store);
   router = inject(Router);
 
@@ -38,5 +38,9 @@ export class HeaderComponent {
 
   goToLogin() {
     this.router.navigate(["/auth/login"]);
+  }
+
+  ngOnInit(): void {
+
   }
 }

@@ -7,42 +7,45 @@
       </div>
 
       <!-- Nav Links -->
-      <nav class="hid den md:flex space-x-8">
-        <a routerLink="/app/products" class="text-gray-700 hover:text-indigo-600">Products</a>
-        <a routerLink="/app/categories" class="text-gray-700 hover:text-indigo-600">Categories</a>
-        <a routerLink="/app/orders" class="text-gray-700 hover:text-indigo-600">Orders</a>
-      </nav>
+       @if (isAuthenticated$|async) {
+         <nav class="hid den md:flex space-x-8">
+           <a routerLink="/app/products" class="text-gray-700 hover:text-indigo-600 cursor-pointer">Products</a>
+           <a routerLink="/app/categories" class="text-gray-700 hover:text-indigo-600 cursor-pointer">Categories</a>
+           <a routerLink="/app/orders" class="text-gray-700 hover:text-indigo-600 cursor-pointer">Orders</a>
+         </nav>
 
-      <!-- Right Side -->
-      <div class="flex items-center space-x-4">
-        <!-- Cart -->
-        <button
-          mat-icon-button
-          class="relative"
-          (click)="goToCart()"
-          [disabled]="!(cartCount$ | async)"
-        >
-          <mat-icon>shopping_cart</mat-icon>
-          <app-cart-badge-component></app-cart-badge-component>
-        </button>
+         <!-- Right Side -->
+         <div class="flex items-center space-x-4">
+           <!-- Cart -->
+           <button
+             mat-icon-button
+             class="relative"
+             (click)="goToCart()"
+             [disabled]="!(cartCount$ | async)"
+           >
+             <mat-icon>shopping_cart</mat-icon>
+             <app-cart-badge-component></app-cart-badge-component>
+           </button>
 
-        <!-- User Menu -->
-         @if (isAuthenticated$|async) {
-            <button mat-button>
-            <mat-icon>account_circle</mat-icon>
-            {{ (user$ | async)?.fullName }}
-          </button>
-         }@else {
-           <mat-menu #userMenu="matMenu">
-            <button mat-menu-item (click)="goToProfile()">Profile</button>
-            <button mat-menu-item (click)="logout()">Logout</button>
-          </mat-menu>
-         }
+           <!-- User Menu -->
+            @if (isAuthenticated$|async) {
+               <button mat-button>
+               <mat-icon>account_circle</mat-icon>
+               {{ (user$ | async)?.fullName }}
+             </button>
+            }@else {
+              <mat-menu #userMenu="matMenu">
+               <button mat-menu-item (click)="goToProfile()">Profile</button>
+               <button mat-menu-item (click)="logout()">Logout</button>
+             </mat-menu>
+            }
 
-        <ng-template #guestMenu>
-          <button mat-button (click)="goToLogin()">Login</button>
-        </ng-template>
-      </div>
+           <ng-template #guestMenu>
+             <button mat-button (click)="goToLogin()">Login</button>
+           </ng-template>
+         </div>
+       }
+
     </div>
   </div>
 </header>
