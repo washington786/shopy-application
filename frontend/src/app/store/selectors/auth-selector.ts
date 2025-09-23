@@ -7,9 +7,5 @@ export const selectAuthUser = createSelector(selectAuthFeature, (state) => state
 export const selectAuthLoading = createSelector(selectAuthFeature, (state) => state.loading);
 export const selectAuthToken = createSelector(selectAuthFeature, (state) => state.token);
 export const selectAuthError = createSelector(selectAuthFeature, (state) => state.error);
-export const selectIsAuthenticated = createSelector(selectAuthToken, (token) => {
-  if (token) return true;
-  if (localStorage.getItem("token")) return true;
-  return false;
-});
+export const selectIsAuthenticated = createSelector(selectAuthFeature, (state) => state.isAuthenticated);
 export const selectAuthUserRoles = createSelector(selectAuthFeature, (state) => state.user?.roles);

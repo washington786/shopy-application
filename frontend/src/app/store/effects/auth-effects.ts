@@ -2,8 +2,8 @@ import { inject, Injectable } from "@angular/core";
 import { Router } from "@angular/router";
 import { Actions, createEffect, ofType } from "@ngrx/effects";
 import { AuthService } from "../../core/services/auth-service";
-import { catchError, exhaustMap, map, of, tap } from "rxjs";
-import { deactivateProfileAction, deactivateProfileFailure, deactivateProfileSuccess, loadProfileAction, loadProfileFailure, loadProfileSuccess, loginAction, loginFailure, loginSuccess, logoutAction, registerAction, registerfailure, registerSuccess, updateProfileAction, updateProfileFailure, updateProfileSuccess } from "../actions/auth-actions";
+import { catchError, exhaustMap, map, of, take, tap } from "rxjs";
+import { deactivateProfileAction, deactivateProfileFailure, deactivateProfileSuccess, loadProfileAction, loadProfileFailure, loadProfileSuccess, loginAction, loginFailure, loginSuccess, logoutAction, persistAuthToken, persistAuthTokenFailure, persistAuthTokenSuccess, registerAction, registerfailure, registerSuccess, updateProfileAction, updateProfileFailure, updateProfileSuccess } from "../actions/auth-actions";
 
 @Injectable()
 export class AuthEffects {
@@ -21,6 +21,16 @@ export class AuthEffects {
       )
     )
   ));
+
+  loginUserSuccess$ = createEffect(() => this.actions$.pipe(
+    ofType(loginSuccess),
+    take(1),
+    tap((res) => {
+      localStorage.setItem("token", res.response.token)
+      this.router.navigate(["/app/products"]);
+    })
+  ), { dispatch: false });
+
   registerUser$ = createEffect(() => this.actions$.pipe(
     ofType(registerAction),
     exhaustMap(action => this.service.registerUser(action.registerRequest).pipe(
@@ -50,11 +60,20 @@ export class AuthEffects {
     ))
   ));
 
-  logout$ = createEffect(() => this.actions$.pipe(
-    ofType(logoutAction),
-    tap(() => {
-      this.service.logout();
-      this.router.navigate(["/auth/login"])
-    })
+  logout$ = createEffect(
+    () => this.actions$.pipe(
+      ofType(logoutAction),
+      tap(() => {
+        this.service.logout();
+        this.router.navigate(["/auth/login"])
+      })
+    ), { dispatch: false });
+
+  persistentAuth$ = createEffect(() => this.actions$.pipe(
+    ofType(persistAuthToken),
+    exhaustMap(action => (this.service.getUserProfile().pipe(
+      map(res => persistAuthTokenSuccess({ user: res, token: localStorage.getItem("token") || "" })),
+      catchError(error => of(persistAuthTokenFailure({ error })))
+    )))
   ))
 }

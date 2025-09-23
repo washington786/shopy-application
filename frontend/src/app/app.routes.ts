@@ -40,8 +40,10 @@ export const routes: Routes = [
   },
   {
     path: 'app',
+    canActivate: [authGuard],
+    data: { expectedRoles: ["User", "Admin", "StoreManager"] },
     children: [
-      { path: 'app', pathMatch: 'full', redirectTo: "app/products" },
+      { path: '', pathMatch: 'full', redirectTo: "products" },
       {
         path: 'products',
         component: ProductsList
@@ -80,8 +82,6 @@ export const routes: Routes = [
         data: ["Admin", "StoreManager"]
       },
     ],
-    canActivate: [authGuard, roleGuard],
-    data: ["User", "Admin", "StoreManager"]
   },
   {
     path: "**",

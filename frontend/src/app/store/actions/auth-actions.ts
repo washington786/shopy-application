@@ -29,3 +29,8 @@ export const deactivateProfileFailure = createAction('[Auth Page] profile remove
 
 // logout
 export const logoutAction = createAction('[Auth Page] logout');
+
+// persistent auth
+export const persistAuthToken = createAction('[Auth Page] persist user');
+export const persistAuthTokenSuccess = createAction('[Auth Page] persist user', props<{ token: string, user: UserDto | null }>());
+export const persistAuthTokenFailure = createAction('[Auth Page] persist user', props<{ error: string }>());

@@ -1,6 +1,6 @@
 import { createReducer, on } from "@ngrx/store";
 import { UserDto } from "../../core/models/auth.model";
-import { deactivateProfileAction, deactivateProfileFailure, deactivateProfileSuccess, loadProfileAction, loadProfileFailure, loadProfileSuccess, loginAction, loginFailure, loginSuccess, logoutAction, registerAction, registerfailure, registerSuccess, updateProfileAction, updateProfileFailure, updateProfileSuccess } from "../actions/auth-actions";
+import { deactivateProfileAction, deactivateProfileFailure, deactivateProfileSuccess, loadProfileAction, loadProfileFailure, loadProfileSuccess, loginAction, loginFailure, loginSuccess, logoutAction, persistAuthToken, persistAuthTokenFailure, persistAuthTokenSuccess, registerAction, registerfailure, registerSuccess, updateProfileAction, updateProfileFailure, updateProfileSuccess } from "../actions/auth-actions";
 
 export const authKey: string = 'auth';
 
@@ -8,7 +8,8 @@ export interface AuthState {
   loading: boolean,
   error: string | null,
   user: UserDto | null,
-  token: string | null
+  token: string | null,
+  isAuthenticated: boolean
 }
 
 
@@ -16,7 +17,8 @@ const initialState: AuthState = {
   error: null,
   loading: false,
   token: null,
-  user: null
+  user: null,
+  isAuthenticated: false
 };
 
 export const authReducer = createReducer(initialState,
@@ -24,10 +26,10 @@ export const authReducer = createReducer(initialState,
   on(loginAction, (state) => ({ ...state, loading: true, error: null })),
   on(loginSuccess, (state, { response }) => {
     localStorage.setItem("token", response.token)
-    return { ...state, loading: false, error: null, user: response.userDto, token: response.token }
+    return { ...state, loading: false, error: null, user: response.userDto, token: response.token, isAuthenticated: true }
   }
   ),
-  on(loginFailure, (state, { error }) => ({ ...state, loading: false, error: error })),
+  on(loginFailure, (state, { error }) => ({ ...state, loading: false, error: error, isAuthenticated: false })),
 
   // register
   on(registerAction, (state) => ({ ...state, error: null, loading: true })),
@@ -50,5 +52,10 @@ export const authReducer = createReducer(initialState,
   on(deactivateProfileSuccess, (state) => ({ ...state, error: null, loading: false })),
 
   // logout
-  on(logoutAction, () => ({ ...initialState }))
+  on(logoutAction, () => ({ ...initialState })),
+
+  // persistent
+  on(persistAuthToken, (state) => ({ ...state, error: null, loading: true })),
+  on(persistAuthTokenSuccess, (state) => ({ ...state, isAuthenticated: true, token: state.token, user: state.user, error: null, loading: false })),
+  on(persistAuthTokenFailure, (state) => ({ ...state, loading: false, error: state.error, isAuthenticated: false }))
 )

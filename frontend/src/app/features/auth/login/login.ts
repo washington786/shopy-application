@@ -39,17 +39,6 @@ export class Login implements OnInit {
     this.error$ = this.store.select(selectAuthError);
     this.isLoading$ = this.store.select(selectAuthLoading);
     this.isAuthenticated$ = this.store.select(selectIsAuthenticated);
-
-    let sub = this.isAuthenticated$.subscribe(auth => {
-      console.log('auth: \n', auth);
-      const tm = setTimeout(() => {
-        if (auth) {
-          this.router.navigate(["/app/products"])
-        }
-      }, 3000)
-      clearTimeout(tm);
-    });
-    this.destroyRef.onDestroy(() => sub.unsubscribe());
   }
 
   passwordRequiredError = computed(() => this.form.get('password')?.errors?.["required"])

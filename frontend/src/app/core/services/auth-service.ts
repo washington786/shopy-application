@@ -7,7 +7,9 @@ import { jwtDecode } from 'jwt-decode';
   providedIn: 'root'
 })
 export class AuthService {
+
   private apiService = inject(ApiService);
+
   private url = `auth`;
 
   loginUser(request: LoginRequest) {
@@ -53,4 +55,5 @@ export class AuthService {
   logout() {
     localStorage.removeItem("token");
   }
+
 }
