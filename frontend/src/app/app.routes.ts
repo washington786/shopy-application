@@ -12,6 +12,7 @@ import { Checkout } from './features/checkout/checkout';
 import { CheckoutSuccess } from './features/checkout/checkout-success/checkout-success';
 import { ProductManagement } from './features/admin/product-management/product-management';
 import { UserManagement } from './features/admin/user-management/user-management';
+import { roleGuard } from './core/guards/role-guard';
 
 export const routes: Routes = [
   {
@@ -73,9 +74,13 @@ export const routes: Routes = [
         children: [
           { path: "product-management", component: ProductManagement },
           { path: "user-management", component: UserManagement },
-        ]
+        ],
+        canActivate: [authGuard, roleGuard],
+        data: ["Admin", "StoreManager"]
       },
-    ]
+    ],
+    canActivate: [authGuard, roleGuard],
+    data: ["User", "Admin", "StoreManager"]
   },
   {
     path: "**",
