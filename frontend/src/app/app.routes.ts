@@ -45,7 +45,7 @@ export const routes: Routes = [
         component: ProductsList
       },
       {
-        path: 'product-details',
+        path: 'product-detail/:id',
         component: ProductsDetails
       },
       {
@@ -57,7 +57,7 @@ export const routes: Routes = [
         component: OrderList
       },
       {
-        path: 'order-detail',
+        path: 'order-detail/:id',
         component: OrderDetail
       },
       {
