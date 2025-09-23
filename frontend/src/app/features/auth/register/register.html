@@ -12,8 +12,6 @@
       </p>
     </div>
 
-
-
     <form [formGroup]="form" (ngSubmit)="onSubmit()" class="mt-8 space-y-6">
       <!-- Error Message -->
         @if (error$|async; as error) {
@@ -21,7 +19,6 @@
             {{error$|async}}
           </div>
         }
-
 
       <!-- Full Name -->
       <div>

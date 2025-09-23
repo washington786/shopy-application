@@ -13,9 +13,9 @@
            </div>
          }
 
-        @if (errorMessage) {
+        @if (errorMessage$|async) {
           <div class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded">
-            {{ errorMessage }}
+            {{ errorMessage$|async}}
           </div>
         }
 
@@ -72,7 +72,7 @@
           <label class="block text-sm font-medium text-gray-700">Roles</label>
           <div class="mt-1">
             <div class="flex flex-wrap gap-2">
-              @for (role of  mockUser.roles; track $index) {
+              @for (role of  loadedUser?.roles; track $index) {
                 <span class="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-indigo-100 text-indigo-800">
                   {{ role }}
                 </span>
@@ -111,10 +111,10 @@
               </button>
               <button
                 type="submit"
-                [disabled]="isLoading"
+                [disabled]="isLoading$|async"
                 class="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
               >
-              @if (isLoading) {
+              @if (isLoading$|async) {
                 <span class="flex items-center">
                   <app-loading-spinner></app-loading-spinner>
                   <span class="ml-2">Saving...</span>
