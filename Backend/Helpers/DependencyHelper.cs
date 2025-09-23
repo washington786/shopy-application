@@ -100,7 +100,7 @@ public class DependencyHelper(IConfiguration configuration, IServiceCollection s
         _service.AddCors(options =>
         {
             options.AddPolicy("dev", op => op.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
-            options.AddPolicy("prod", op => op.WithOrigins("https://localhost:4200").AllowAnyHeader().AllowAnyMethod());
+            options.AddPolicy("prod", op => op.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
         });
     }
 }
