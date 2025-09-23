@@ -41,6 +41,7 @@ export const routes: Routes = [
   {
     path: 'app',
     children: [
+      { path: 'app', pathMatch: 'full', redirectTo: "app/products" },
       {
         path: 'products',
         component: ProductsList

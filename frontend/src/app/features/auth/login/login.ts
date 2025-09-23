@@ -41,9 +41,13 @@ export class Login implements OnInit {
     this.isAuthenticated$ = this.store.select(selectIsAuthenticated);
 
     let sub = this.isAuthenticated$.subscribe(auth => {
-      if (auth) {
-        this.router.navigate(["/app/products"])
-      }
+      console.log('auth: \n', auth);
+      const tm = setTimeout(() => {
+        if (auth) {
+          this.router.navigate(["/app/products"])
+        }
+      }, 3000)
+      clearTimeout(tm);
     });
     this.destroyRef.onDestroy(() => sub.unsubscribe());
   }

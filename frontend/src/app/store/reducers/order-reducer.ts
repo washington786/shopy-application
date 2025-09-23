@@ -2,7 +2,7 @@ import { createReducer, on } from "@ngrx/store";
 import { OrderDto } from "../../core/models/order.model";
 import { addOrderAction, AddOrderFailure, AddOrderSuccess, loadOrderByidAction, loadOrderByidFailure, loadOrderByidSuccess, loadOrdersAction, loadOrdersFailure, loadOrdersSuccess, updateOrderAction, updateOrderFailure, updateOrderSuccess } from "../actions/order-actions";
 
-export const orderKey: string = 'Orders';
+export const orderKey: string = 'orders';
 
 export interface OrderState {
   loading: boolean;

@@ -22,7 +22,7 @@ export const appConfig: ApplicationConfig = {
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
     provideRouter(routes),
-    provideStore({ auth: authReducer, cart: cartReducer, order: orderReducer, product: productsReducer }),
+    provideStore({ auth: authReducer, cart: cartReducer, ordes: orderReducer, products: productsReducer }),
     provideEffects([AuthEffects, CartEffects, OrderEffects, ProductEffects]),
     provideRouterStore(),
     provideHttpClient(withInterceptors([jwtAuthInterceptor, errorHandlerInterceptor]))

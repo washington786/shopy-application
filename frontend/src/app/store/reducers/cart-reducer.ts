@@ -2,7 +2,7 @@ import { createReducer, on } from "@ngrx/store";
 import { CartItemDto } from "../../core/models/cart.model";
 import { addToCartAction, addToCartFailure, addToCartSuccess, clearCartAction, clearCartFailure, clearCartSuccess, loadCartAction, loadCartFailure, loadCartSuccess, removeItemCartAction, removeItemCartFailure, removeItemCartSuccess, updateItemCartAction, updateItemCartFailure, updateItemCartSuccess } from "../actions/cart-actions";
 
-export const cartKey: string = 'Cart';
+export const cartKey: string = 'cart';
 
 export interface CartState {
   loading: boolean;
