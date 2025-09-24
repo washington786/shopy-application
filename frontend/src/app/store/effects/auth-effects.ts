@@ -71,9 +71,20 @@ export class AuthEffects {
 
   persistentAuth$ = createEffect(() => this.actions$.pipe(
     ofType(persistAuthToken),
-    exhaustMap(action => (this.service.getUserProfile().pipe(
-      map(res => persistAuthTokenSuccess({ user: res, token: localStorage.getItem("token") || "" })),
-      catchError(error => of(persistAuthTokenFailure({ error })))
-    )))
-  ))
+    exhaustMap(action => {
+      const token = localStorage.getItem("token");
+
+      if (!token) {
+        return of(persistAuthTokenFailure({ error: 'No token found' }));
+      }
+
+      return this.service.getUserProfile().pipe(
+        map(user => persistAuthTokenSuccess({
+          user: user,
+          token: token
+        })),
+        catchError(error => of(persistAuthTokenFailure({ error: error.message })))
+      );
+    })
+  ));
 }

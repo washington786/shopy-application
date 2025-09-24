@@ -18,7 +18,7 @@ export class ApiService {
   }
 
   get<T>(url: string): Observable<T> {
-    return this.http.get<T>(`${this.baseUrl}`, { headers: this.getHeaders() }).pipe(retry(1), catchError(error => this.handleError(error)));
+    return this.http.get<T>(`${this.baseUrl}${url}`, { headers: this.getHeaders() }).pipe(retry(1), catchError(error => this.handleError(error)));
   }
 
   post<T>(url: string, body: any): Observable<T> {

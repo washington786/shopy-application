@@ -3,11 +3,11 @@
     <div class="flex justify-between items-center h-16">
       <!-- Logo -->
       <div class="flex-shrink-0">
-        <a routerLink="/" class="text-2xl font-bold text-indigo-600">Shopy</a>
+        <a [routerLink]="isAuthenticated$?'/app/products':'/auth'" class="text-2xl font-bold text-indigo-600">Shopy</a>
       </div>
 
       <!-- Nav Links -->
-       @if (isAuthenticated$|async) {
+       @if (isAuthenticated$) {
          <nav class="hid den md:flex space-x-8">
            <a routerLink="/app/products" class="text-gray-700 hover:text-indigo-600 cursor-pointer">Products</a>
            <a routerLink="/app/categories" class="text-gray-700 hover:text-indigo-600 cursor-pointer">Categories</a>
@@ -28,7 +28,7 @@
            </button>
 
            <!-- User Menu -->
-            @if (isAuthenticated$|async) {
+            @if (isAuthenticated$) {
                <button mat-button>
                <mat-icon>account_circle</mat-icon>
                {{ (user$ | async)?.fullName }}

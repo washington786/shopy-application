@@ -2,114 +2,128 @@
   <h1 class="text-3xl font-bold mb-8">My Orders</h1>
 
   <!-- Loading State -->
-  <div *ngIf="isLoading" class="flex justify-center py-12">
-    <app-loading-spinner></app-loading-spinner>
-  </div>
+   @if (isLoading) {
+     <div class="flex justify-center py-12">
+       <app-loading-spinner></app-loading-spinner>
+     </div>
+   }
 
   <!-- No Orders -->
-  <div *ngIf="!isLoading && orders.length === 0" class="text-center py-12">
-    <mat-icon class="text-6xl text-gray-300">receipt_long</mat-icon>
-    <h3 class="mt-4 text-xl font-medium text-gray-900">No orders yet</h3>
-    <p class="mt-2 text-gray-500">Start shopping to see your orders here.</p>
-    <button
-      (click)="router.navigate(['/app/products'])"
-      class="mt-4 px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
-    >
-      Start Shopping
-    </button>
-  </div>
+   @if (!isLoading && orders.length===0) {
+     <div class="text-center py-12">
+       <mat-icon class="text-6xl text-gray-300">receipt_long</mat-icon>
+       <h3 class="mt-4 text-xl font-medium text-gray-900">No orders yet</h3>
+       <p class="mt-2 text-gray-500">Start shopping to see your orders here.</p>
+       <button
+         (click)="router.navigate(['/app/products'])"
+         class="mt-4 px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+       >
+         Start Shopping
+       </button>
+     </div>
+
+   }
 
   <!-- Orders List -->
-  <div *ngIf="!isLoading && orders.length > 0">
-    <!-- Status Filter -->
-    <div class="mb-6 flex flex-wrap gap-2">
-      <button
-        (click)="filterByStatus(null)"
-        [class.bg-indigo-600.text-white]="selectedStatus === null"
-        [class.bg-white.text-gray-700.border.border-gray-300]="selectedStatus !== null"
-        class="px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-50"
-      >
-        All Orders
-      </button>
-      <button
-        (click)="filterByStatus('Processing')"
-        [class.bg-yellow-100.text-yellow-800]="selectedStatus === 'Processing'"
-        [class.bg-white.text-gray-700.border.border-gray-300]="selectedStatus !== 'Processing'"
-        class="px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-50"
-      >
-        Processing
-      </button>
-      <button
-        (click)="filterByStatus('Shipped')"
-        [class.bg-blue-100.text-blue-800]="selectedStatus === 'Shipped'"
-        [class.bg-white.text-gray-700.border.border-gray-300]="selectedStatus !== 'Shipped'"
-        class="px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-50"
-      >
-        Shipped
-      </button>
-      <button
-        (click)="filterByStatus('Delivered')"
-        [class.bg-green-100.text-green-800]="selectedStatus === 'Delivered'"
-        [class.bg-white.text-gray-700.border.border-gray-300]="selectedStatus !== 'Delivered'"
-        class="px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-50"
-      >
-        Delivered
-      </button>
-    </div>
+   @if (!isLoading && orders.length>0) {
 
-    <!-- Orders -->
-    <div class="space-y-6">
-      <div
-        *ngFor="let order of filteredOrders"
-        class="bg-white rounded-lg shadow overflow-hidden hover:shadow-md transition-shadow"
-      >
-        <div class="p-6">
-          <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start">
-            <div>
-              <h3 class="text-lg font-semibold text-gray-900">Order #{{ order.orderNumber }}</h3>
-              <p class="text-sm text-gray-500 mt-1">Placed on {{ order.orderDate | date:'medium' }}</p>
-            </div>
-            <div class="mt-4 sm:mt-0">
-              <span [class]="getStatusBadgeClass(order.status)" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium">
-                {{ order.status }}
-              </span>
-            </div>
-          </div>
+     <div>
+       <!-- Status Filter -->
+       <div class="mb-6 flex flex-wrap gap-2">
+         <button
+           (click)="filterByStatus(null)"
+           [class.bg-indigo-600.text-white]="selectedStatus === null"
+           [class.bg-white.text-gray-700.border.border-gray-300]="selectedStatus !== null"
+           class="px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-50"
+         >
+           All Orders
+         </button>
+         <button
+           (click)="filterByStatus('Processing')"
+           [class.bg-yellow-100.text-yellow-800]="selectedStatus === 'Processing'"
+           [class.bg-white.text-gray-700.border.border-gray-300]="selectedStatus !== 'Processing'"
+           class="px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-50"
+         >
+           Processing
+         </button>
+         <button
+           (click)="filterByStatus('Shipped')"
+           [class.bg-blue-100.text-blue-800]="selectedStatus === 'Shipped'"
+           [class.bg-white.text-gray-700.border.border-gray-300]="selectedStatus !== 'Shipped'"
+           class="px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-50"
+         >
+           Shipped
+         </button>
+         <button
+           (click)="filterByStatus('Delivered')"
+           [class.bg-green-100.text-green-800]="selectedStatus === 'Delivered'"
+           [class.bg-white.text-gray-700.border.border-gray-300]="selectedStatus !== 'Delivered'"
+           class="px-4 py-2 rounded-md text-sm font-medium hover:bg-gray-50"
+         >
+           Delivered
+         </button>
+       </div>
 
-          <div class="mt-4">
-            <div class="flex justify-between items-center">
-              <span class="text-gray-600">Items: {{ order.items.length }}</span>
-              <span class="text-xl font-bold text-gray-900">${{ order.totalAmount }}</span>
-            </div>
-          </div>
-
-          <div class="mt-6">
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div *ngFor="let item of order.items.slice(0, 2)">
-                <div class="flex items-center">
-                  <div class="flex-shrink-0 h-10 w-10 bg-gray-200 rounded-md"></div>
-                  <div class="ml-3">
-                    <p class="text-sm font-medium text-gray-900">{{ item.productName }}</p>
-                    <p class="text-sm text-gray-500">{{ item.quantity }} x ${{ item.unitPrice }}</p>
-                  </div>
+       <!-- Orders -->
+       <div class="space-y-6">
+        @for (order of filteredOrders; track $index) {
+          <div
+            class="bg-white rounded-lg shadow overflow-hidden hover:shadow-md transition-shadow"
+          >
+            <div class="p-6">
+              <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start">
+                <div>
+                  <h3 class="text-lg font-semibold text-gray-900">Order #{{ order.orderNumber }}</h3>
+                  <p class="text-sm text-gray-500 mt-1">Placed on {{ order.orderDate | date:'medium' }}</p>
+                </div>
+                <div class="mt-4 sm:mt-0">
+                  <span [class]="getStatusBadgeClass(order.status)" class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium">
+                    {{ order.status }}
+                  </span>
                 </div>
               </div>
-            </div>
-            <div *ngIf="order.items.length > 2" class="mt-2 text-sm text-indigo-600">
-              +{{ order.items.length - 2 }} more items
-            </div>
-          </div>
 
-          <div class="mt-6 flex justify-end">
-            <button
-              (click)="viewOrder(order.id)"
-              class="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
-            >
-              View Details
-            </button>
+              <div class="mt-4">
+                <div class="flex justify-between items-center">
+                  <span class="text-gray-600">Items: {{ order.items.length }}</span>
+                  <span class="text-xl font-bold text-gray-900">${{ order.totalAmount }}</span>
+                </div>
+              </div>
+
+              <div class="mt-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  @for (item of order.items.slice(0, 2); track $index) {
+                    <div>
+                      <div class="flex items-center">
+                        <div class="flex-shrink-0 h-10 w-10 bg-gray-200 rounded-md"></div>
+                        <div class="ml-3">
+                          <p class="text-sm font-medium text-gray-900">{{ item.productName }}</p>
+                          <p class="text-sm text-gray-500">{{ item.quantity }} x ${{ item.unitPrice }}</p>
+                        </div>
+                      </div>
+                    </div>
+                  }
+                </div>
+                @if (order.items.length>2) {
+
+                  <div class="mt-2 text-sm text-indigo-600">
+                    +{{ order.items.length - 2 }} more items
+                  </div>
+                }
+              </div>
+
+              <div class="mt-6 flex justify-end">
+                <button
+                  (click)="viewOrder(order.id)"
+                  class="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
+                >
+                  View Details
+                </button>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-    </div>
-  </div>
+        }
+       </div>
+     </div>
+   }
 </div>

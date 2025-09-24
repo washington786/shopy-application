@@ -1,17 +1,5 @@
 import { Routes } from '@angular/router';
-import { Login } from './features/auth/login/login';
-import { Register } from './features/auth/register/register';
 import { authGuard } from './core/guards/auth-guard';
-import { Profile } from './features/auth/profile/profile';
-import { ProductsList } from './features/products/products-list/products-list';
-import { ProductsDetails } from './features/products/products-details/products-details';
-import { Cart } from './features/cart/cart';
-import { OrderList } from './features/orders/order-list/order-list';
-import { OrderDetail } from './features/orders/order-detail/order-detail';
-import { Checkout } from './features/checkout/checkout';
-import { CheckoutSuccess } from './features/checkout/checkout-success/checkout-success';
-import { ProductManagement } from './features/admin/product-management/product-management';
-import { UserManagement } from './features/admin/user-management/user-management';
 import { roleGuard } from './core/guards/role-guard';
 
 export const routes: Routes = [
@@ -20,17 +8,12 @@ export const routes: Routes = [
     children: [
       {
         path: 'login',
-        component: Login
+        loadComponent: () => import('./features/auth/login/login').then(res => res.Login)
       },
       {
         path: 'register',
-        component: Register
-      },
-      {
-        path: 'profile',
-        component: Profile,
-        canActivate: [authGuard]
-      },
+        loadComponent: () => import('./features/auth/register/register').then(res => res.Register)
+      }
     ]
   },
   {
@@ -46,37 +29,42 @@ export const routes: Routes = [
       { path: '', pathMatch: 'full', redirectTo: "products" },
       {
         path: 'products',
-        component: ProductsList
+        loadComponent: () => import('./features/products/products-list/products-list').then(res => res.ProductsList)
       },
       {
         path: 'product-detail/:id',
-        component: ProductsDetails
+        loadComponent: () => import('./features/products/products-details/products-details').then(res => res.ProductsDetails)
       },
       {
         path: 'cart',
-        component: Cart
+        loadComponent: () => import("./features/cart/cart").then(res => res.Cart)
       },
       {
         path: 'orders',
-        component: OrderList
+        loadComponent: () => import("./features/orders/order-list/order-list").then(res => res.OrderList)
       },
       {
         path: 'order-detail/:id',
-        component: OrderDetail
+        loadComponent: () => import("./features/orders/order-detail/order-detail").then(res => res.OrderDetail)
       },
       {
         path: 'checkout',
-        component: Checkout
+        loadComponent: () => import("./features/checkout/checkout").then(res => res.Checkout)
       },
       {
         path: 'checkout-success',
-        component: CheckoutSuccess
+        loadComponent: () => import("./features/checkout/checkout-success/checkout-success").then(res => res.CheckoutSuccess)
+      },
+      {
+        path: 'profile',
+        loadComponent: () => import("./features/auth/profile/profile").then(res => res.Profile),
       },
       {
         path: 'admin',
         children: [
-          { path: "product-management", component: ProductManagement },
-          { path: "user-management", component: UserManagement },
+          { path: "product-management", loadComponent: () => import('./features/admin/product-management/product-management').then(res => res.ProductManagement) },
+          { path: "user-management", loadComponent: () => import("./features/admin/user-management/user-management").then(res => res.UserManagement) },
+          { path: "categories-management", loadComponent: () => import("./features/admin/categories-management/categories-management").then(res => res.CategoriesManagement) },
         ],
         canActivate: [authGuard, roleGuard],
         data: ["Admin", "StoreManager"]

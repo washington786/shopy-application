@@ -9,6 +9,7 @@ import { jwtDecode } from 'jwt-decode';
 export class AuthService {
 
   private apiService = inject(ApiService);
+  token: string = "token";
 
   private url = `auth`;
 
@@ -32,10 +33,6 @@ export class AuthService {
     return this.apiService.delete(`${this.url}/${id}`);
   }
 
-  isAuthenticated() {
-    return !!localStorage.getItem("token");
-  }
-
   getUserRoles() {
     const token = localStorage.getItem("token");
     if (!token) return [];
@@ -52,8 +49,42 @@ export class AuthService {
     }
   }
 
+  getToken() {
+    const tok = localStorage.getItem(this.token);
+    return tok ? tok : '';
+  }
+
   logout() {
-    localStorage.removeItem("token");
+    localStorage.removeItem(this.token);
+  }
+
+  isAuthenticated() {
+    const token = this.getToken();
+    if (!token) return false;
+
+    if (this.isTokenExpired()) {
+      this.logout();
+      return false;
+    }
+    return true;
+  }
+
+  isTokenExpired() {
+    const token = this.getToken();
+
+    if (!token) return true;
+
+    try {
+      const decoded: any = jwtDecode(token);
+
+      if (!decoded.exp) return true;
+
+      return Date.now() > decoded.exp! * 1000;
+
+    } catch (error) {
+      console.log(error);
+      return true;
+    }
   }
 
 }

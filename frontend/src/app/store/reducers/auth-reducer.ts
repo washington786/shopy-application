@@ -56,6 +56,6 @@ export const authReducer = createReducer(initialState,
 
   // persistent
   on(persistAuthToken, (state) => ({ ...state, error: null, loading: true })),
-  on(persistAuthTokenSuccess, (state) => ({ ...state, isAuthenticated: true, token: state.token, user: state.user, error: null, loading: false })),
+  on(persistAuthTokenSuccess, (state, { token, user }) => ({ ...state, isAuthenticated: true, token: token, user: user, error: null, loading: false })),
   on(persistAuthTokenFailure, (state) => ({ ...state, loading: false, error: state.error, isAuthenticated: false }))
 )
