@@ -11,7 +11,7 @@ export class AdminService {
   private url = `/admin`;
 
   loadAllUsers(page: number = 1, pageSize: number = 10) {
-    return this.apiService.get<UserDto[]>(`/all-users?page=${page}&pageSize=${pageSize}`);
+    return this.apiService.get<UserDto[]>(`${this.url}/all-users?page=${page}&pageSize=${pageSize}`);
   }
 
   updateUserRole(request: updateRoleRequest, id: string) {
