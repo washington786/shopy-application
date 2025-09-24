@@ -1,7 +1,9 @@
-import { Component, OnInit, signal } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LoadingSpinner } from "../../../shared/loading-spinner/loading-spinner";
 import { MatIconModule } from '@angular/material/icon'
+import { ProductService } from '../../../core/services/product-service';
+import { ProductDto } from '../../../core/models/product.model';
 @Component({
   selector: 'app-product-management',
   imports: [LoadingSpinner, ReactiveFormsModule, MatIconModule],
@@ -9,38 +11,6 @@ import { MatIconModule } from '@angular/material/icon'
   styleUrl: './product-management.css'
 })
 export class ProductManagement implements OnInit {
-  products = [
-    {
-      id: 1,
-      name: 'Wireless Headphones',
-      description: 'High-quality wireless headphones with noise cancellation.',
-      price: 99.99,
-      stock: 50,
-      productImageUrl: '/assets/images/headphones.jpg',
-      categoryId: 1,
-      categoryName: 'Electronics'
-    },
-    {
-      id: 2,
-      name: 'C# in Depth',
-      description: 'Master C# with this comprehensive guide.',
-      price: 45.5,
-      stock: 30,
-      productImageUrl: '/assets/images/csharp-book.jpg',
-      categoryId: 2,
-      categoryName: 'Books'
-    },
-    {
-      id: 3,
-      name: 'Cotton T-Shirt',
-      description: 'Comfortable 100% cotton t-shirt.',
-      price: 19.99,
-      stock: 100,
-      productImageUrl: '/assets/images/tshirt.jpg',
-      categoryId: 3,
-      categoryName: 'Clothing'
-    }
-  ];
 
   // Mock categories
   categories = [
@@ -52,9 +22,13 @@ export class ProductManagement implements OnInit {
 
   // UI State
   isLoading = signal(false);
+  service = inject(ProductService);
+  destroyRef = inject(DestroyRef);
+  products = signal<ProductDto[] | null>([]);
   isModalOpen = false;
   isEditing = false;
-  selectedProduct: any = null;
+  error: string | null = null;
+  selectedProduct: ProductDto | null = null;
 
   // Forms
   productForm: FormGroup;
@@ -71,11 +45,21 @@ export class ProductManagement implements OnInit {
   }
 
   ngOnInit() {
+    this.loadproducts();
+  }
+
+  loadproducts() {
     this.isLoading.set(true);
-    // Simulate API delay
-    setTimeout(() => {
-      this.isLoading.set(false);
-    }, 800);
+    let sub = this.service.getAllProducts().subscribe({
+      next: products => {
+        this.products.set(products);
+        this.isLoading.set(false);
+      },
+      error: error => {
+        this.error = error;
+      }
+    });
+    this.destroyRef.onDestroy(() => sub.unsubscribe());
   }
 
   openCreateModal() {
@@ -117,48 +101,52 @@ export class ProductManagement implements OnInit {
     }
 
     this.isLoading.set(true);
-    // TODO: Connect to ProductService later
-    console.log('Product form submitted', {
-      ...this.productForm.value,
-      id: this.isEditing ? this.selectedProduct.id : null
-    });
 
-    // Simulate API delay
-    setTimeout(() => {
-      this.isLoading.set(false);
-      if (this.isEditing) {
-        // Update mock product
-        const index = this.products.findIndex(p => p.id === this.selectedProduct.id);
-        if (index !== -1) {
-          this.products[index] = {
-            ...this.products[index],
-            ...this.productForm.value,
-            categoryId: parseInt(this.productForm.value.categoryId),
-            price: parseFloat(this.productForm.value.price),
-            stock: parseInt(this.productForm.value.stock)
-          };
+    const formData = this.productForm.value;
+    if (this.isEditing && this.selectedProduct) {
+
+      let sub = this.service.updateProductDetails(this.selectedProduct.id, formData).subscribe({
+        next: res => {
+          this.products.update(prod => {
+            if (!prod) return null;
+            return prod.map(p => p.id === res.id ? res : p)
+          })
+          this.isLoading.set(false);
+        },
+        error: error => {
+          this.error = error;
         }
-      } else {
-        // Add new mock product
-        const newProduct = {
-          id: this.products.length + 1,
-          ...this.productForm.value,
-          categoryId: parseInt(this.productForm.value.categoryId),
-          price: parseFloat(this.productForm.value.price),
-          stock: parseInt(this.productForm.value.stock),
-          categoryName: this.categories.find(c => c.id === parseInt(this.productForm.value.categoryId))?.name || 'Unknown'
-        };
-        this.products.push(newProduct);
-      }
-      this.closeModal();
-    }, 1000);
+      });
+      this.destroyRef.onDestroy(() => sub.unsubscribe());
+    } else {
+      let sub = this.service.createProduct(formData).subscribe({
+        next: response => {
+          this.products.update(products => {
+            if (!products) return [response];
+            return [...products, response];
+          });
+          this.isLoading.set(false);
+        },
+        error: error => {
+          this.error = error;
+          this.isLoading.set(false);
+        }
+      });
+      this.destroyRef.onDestroy(() => sub.unsubscribe());
+    }
   }
 
   deleteProduct(id: number) {
     if (confirm('Are you sure you want to delete this product?')) {
-      // TODO: Connect to ProductService later
-      console.log('Delete product', id);
-      this.products = this.products.filter(p => p.id !== id);
+      let sub = this.service.removeProduct(id).subscribe({
+        next: () => {
+          this.loadproducts();
+        },
+        error: error => {
+          this.error = error;
+        }
+      });
+      this.destroyRef.onDestroy(() => sub.unsubscribe());
     }
   }
 

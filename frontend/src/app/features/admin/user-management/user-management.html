@@ -13,7 +13,8 @@
   </div>
 
   <!-- Users Table -->
-  @if (!isLoading()) {
+
+  @if (!isLoading() && usersLength()!==0) {
     <div class="bg-white rounded-lg shadow overflow-hidden">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
@@ -77,6 +78,10 @@
           </tbody>
         </table>
       </div>
+    </div>
+  }@else {
+    <div class="bg-yellow-100 py-3 px-4 flex items-center justify-center">
+      <span class="text-lg text-gray-600">No Users Found!</span>
     </div>
   }
 

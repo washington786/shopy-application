@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LoadingSpinner } from "../../../shared/loading-spinner/loading-spinner";
 import { DatePipe } from '@angular/common';
@@ -35,6 +35,8 @@ export class UserManagement implements OnInit {
       roles: [[], Validators.required]
     });
   }
+
+  usersLength = computed(() => this.users.length);
 
   ngOnInit() {
     this.isLoading.set(true);
