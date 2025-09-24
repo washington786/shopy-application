@@ -7,13 +7,24 @@
       </div>
 
       <!-- Nav Links -->
-       @if (isAuthenticated$) {
-         <nav class="hid den md:flex space-x-8">
-           <a routerLink="/app/products" class="text-gray-700 hover:text-indigo-600 cursor-pointer">Products</a>
-           <a routerLink="/app/admin/categories-management" class="text-gray-700 hover:text-indigo-600 cursor-pointer">Categories</a>
-           <a routerLink="/app/orders" class="text-gray-700 hover:text-indigo-600 cursor-pointer">Orders</a>
-         </nav>
-      }
+      @if (isAuthenticated$ && user$) {
+         <!-- @for (role of user$?.roles; track $index) { -->
+          @if(user$.roles && user$.roles.includes("Admin") || user$.roles.includes("StoreManager")){
+            <nav class="hid den md:flex space-x-8">
+              <a routerLink="/admin/products" class="text-gray-700 hover:text-indigo-600 cursor-pointer">Products</a>
+              <a routerLink="/admin/categories" class="text-gray-700 hover:text-indigo-600 cursor-pointer">Categories</a>
+              <a routerLink="/admin/users" class="text-gray-700 hover:text-indigo-600 cursor-pointer">Users</a>
+              <a routerLink="/admin/orders" class="text-gray-700 hover:text-indigo-600 cursor-pointer">Orders</a>
+            </nav>
+          }
+          @else{
+            <nav class="hid den md:flex space-x-8">
+              <a routerLink="/app/products" class="text-gray-700 hover:text-indigo-600 cursor-pointer">Products</a>
+              <a routerLink="/app/orders" class="text-gray-700 hover:text-indigo-600 cursor-pointer">Orders</a>
+            </nav>
+          }
+         }
+      <!-- } -->
 
          <!-- Right Side -->
          <div class="flex items-center space-x-4">
@@ -22,17 +33,18 @@
              mat-icon-button
              class="relative"
              (click)="goToCart()"
-             [disabled]="!(cartCount$ | async)"
+
            >
              <mat-icon>shopping_cart</mat-icon>
              <app-cart-badge-component></app-cart-badge-component>
            </button>
+           <!-- [disabled]="!(cartCount$)" -->
 
            <!-- User Menu -->
             @if (isAuthenticated$) {
                <button mat-button [matMenuTriggerFor]="userMenu">
             <mat-icon>account_circle</mat-icon>
-            {{ (user$ | async)?.fullName }}
+            {{ (user$)?.fullName }}
           </button>
           <mat-menu #userMenu="matMenu">
             <button mat-menu-item (click)="goToProfile()">Profile</button>

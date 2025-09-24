@@ -8,6 +8,7 @@ import { UserDto } from '../../../core/models/auth.model';
 import { selectAuthError, selectAuthLoading, selectAuthUser } from '../../../store/selectors/auth-selector';
 import { logoutAction } from '../../../store/actions/auth-actions';
 import { AsyncPipe } from '@angular/common';
+import { AuthService } from '../../../core/services/auth-service';
 
 @Component({
   selector: 'app-profile',
@@ -15,6 +16,7 @@ import { AsyncPipe } from '@angular/common';
   templateUrl: './profile.html',
   styleUrl: './profile.css'
 })
+
 export class Profile {
   formBuilder = inject(FormBuilder);
   form!: FormGroup;
@@ -33,27 +35,39 @@ export class Profile {
   isEditing: boolean = false;
   successMessage: string | null = null;
 
+  service = inject(AuthService);
+
   loadedUser: UserDto | null = null;
+  error: string | null = null;
 
   ngOnInit(): void {
     this.form = this.formBuilder.group({
       email: ['', [Validators.email, Validators.required]],
-      fullName: ['', [Validators.required]]
+      fullname: ['', [Validators.required]]
     });
 
     this.user$ = this.store.select(selectAuthUser);
     this.isLoading$ = this.store.select(selectAuthLoading);
     this.errorMessage$ = this.store.select(selectAuthError);
 
-    let sub = this.user$.subscribe({
-      next: (res) => {
-        this.form.patchValue({
-          email: res?.email,
-          fullName: res?.fullName
-        });
+    const sub = this.service.getUserProfile().subscribe({
+      next: res => {
         this.loadedUser = res;
+        this.form.patchValue(res);
+      }, error: (error) => {
+        this.error = error;
       }
     });
+
+    // let sub = this.user$.subscribe({
+    //   next: (res) => {
+    //     this.form.patchValue({
+    //       email: res?.email,
+    //       fullName: res?.fullName
+    //     });
+    //     this.loadedUser = res;
+    //   }
+    // });
     this.destroy.onDestroy(() => sub.unsubscribe());
   }
 

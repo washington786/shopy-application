@@ -59,16 +59,17 @@ export const routes: Routes = [
         path: 'profile',
         loadComponent: () => import("./features/auth/profile/profile").then(res => res.Profile),
       },
-      {
-        path: 'admin',
-        children: [
-          { path: "product-management", loadComponent: () => import('./features/admin/product-management/product-management').then(res => res.ProductManagement) },
-          { path: "user-management", loadComponent: () => import("./features/admin/user-management/user-management").then(res => res.UserManagement) },
-          { path: "categories-management", loadComponent: () => import("./features/admin/categories-management/categories-management").then(res => res.CategoriesManagement) },
-        ],
-        canActivate: [authGuard, roleGuard],
-        data: ["Admin", "StoreManager"]
-      },
+    ],
+  },
+  {
+    path: 'admin',
+    canActivate: [authGuard, roleGuard],
+    data: { expectedRoles: ["Admin", "StoreManager"] },
+    children: [
+      { path: '', pathMatch: "full", redirectTo: "products" },
+      { path: "products", loadComponent: () => import('./features/admin/product-management/product-management').then(res => res.ProductManagement) },
+      { path: "users", loadComponent: () => import("./features/admin/user-management/user-management").then(res => res.UserManagement) },
+      { path: "categories", loadComponent: () => import("./features/admin/categories-management/categories-management").then(res => res.CategoriesManagement) },
     ],
   },
   {

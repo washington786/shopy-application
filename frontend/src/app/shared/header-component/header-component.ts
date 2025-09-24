@@ -1,15 +1,12 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
-import { Store } from '@ngrx/store';
-import { selectCartCount } from '../../store/selectors/cart-selector';
-import { selectAuthUser, selectIsAuthenticated } from '../../store/selectors/auth-selector';
-import { logoutAction } from '../../store/actions/auth-actions';
 import { MatIconModule } from '@angular/material/icon'
 import { CartBadgeComponent } from "../cart-badge-component/cart-badge-component";
 import { AsyncPipe } from '@angular/common';
 import { MatMenuModule } from '@angular/material/menu';
 import { AuthService } from '../../core/services/auth-service';
 import { MatButtonModule } from '@angular/material/button'
+import { UserDto } from '../../core/models/auth.model';
 
 @Component({
   selector: 'app-header-component',
@@ -19,16 +16,17 @@ import { MatButtonModule } from '@angular/material/button'
 })
 
 export class HeaderComponent implements OnInit {
-  store = inject(Store);
+  // store = inject(Store);
   router = inject(Router);
   service = inject(AuthService);
-
-  cartCount$ = this.store.select(selectCartCount);
-  isAuthenticated$ = this.service.isAuthenticated();
-  user$ = this.store.select(selectAuthUser);
+  user$: UserDto | null = null;
+  isAuthenticated$: boolean = false;
+  destroyRef = inject(DestroyRef);
+  // cartCount$ = this.store.select(selectCartCount);
+  // user$ = this.store.select(selectAuthUser);
 
   logout() {
-    this.store.dispatch(logoutAction());
+    this.service.logout();
   }
 
   goToCart() {
@@ -44,6 +42,12 @@ export class HeaderComponent implements OnInit {
   }
 
   ngOnInit(): void {
-
+    let sub = this.service.getUserProfile().subscribe({
+      next: res => {
+        this.user$ = res;
+        this.isAuthenticated$ = true;
+      }
+    });
+    this.destroyRef.onDestroy(() => sub.unsubscribe());
   }
 }

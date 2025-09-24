@@ -22,30 +22,38 @@ export class AuthService {
   }
 
   getUserProfile() {
-    return this.apiService.get<UserDto>(`${this.url}/my-profile`)
+    return this.apiService.get<UserDto>(`/${this.url}/my-profile`)
   }
 
   updateUserProfile(request: updateProfileRequest) {
-    return this.apiService.put<UserDto>(`${this.url}/me`, request);
+    return this.apiService.put<UserDto>(`/${this.url}/me`, request);
   }
 
   deactivateUserProfile(id: string) {
     return this.apiService.delete(`${this.url}/${id}`);
   }
 
-  getUserRoles() {
+  getUserRoles(): string[] {
     const token = localStorage.getItem("token");
     if (!token) return [];
+
     try {
-      const decoded: JwtPayload = jwtDecode(token);
-      if (Date.now() >= decoded.exp * 1000) {
-        localStorage.removeItem("token");
-        return [];
-      }
-      return Array.isArray(decoded.role) ? decoded.role : []
+      const decoded: any = jwtDecode(token);
+
+      // 👇 Use the FULL claim name from your JWT
+      const roleClaim = 'http://schemas.microsoft.com/ws/2008/06/identity/claims/role';
+      const role = decoded[roleClaim];
+
+      if (!role) return [];
+
+      // Handle both string and array
+      if (Array.isArray(role)) return role;
+      if (typeof role === 'string') return [role];
+
+      return [];
     } catch (error) {
       localStorage.removeItem("token");
-      return []
+      return [];
     }
   }
 

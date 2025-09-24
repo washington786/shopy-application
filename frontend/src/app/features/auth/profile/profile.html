@@ -5,6 +5,9 @@
       <p class="mt-1 max-w-2xl text-sm text-gray-500">Manage your account settings and preferences.</p>
     </div>
     <div class="border-t border-gray-200 px-4 py-5 sm:px-6">
+      @if (error) {
+        <div class="flex bg-red-400 py-2 px-10 w-full my-3">{{error}}</div>
+      }
       <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-6">
         <!-- Success/Error Messages -->
          @if (successMessage) {
@@ -24,18 +27,18 @@
           <label for="fullName" class="block text-sm font-medium text-gray-700">Full Name</label>
           <div class="mt-1">
             <input
-              id="fullName"
+              id="fullname"
               type="text"
-              formControlName="fullName"
+              formControlName="fullname"
               [readonly]="!isEditing"
               class="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
             />
-            @if (form.get('fullName')?.invalid && (form.get('fullName')?.dirty || form.get('fullName')?.touched)) {
+            @if (form.get('fullname')?.invalid && (form.get('fullname')?.dirty || form.get('fullName')?.touched)) {
               <div class="text-red-500 text-sm mt-1">
-                @if (form.get('fullName')?.errors?.['required']) {
+                @if (form.get('fullname')?.errors?.['required']) {
                   <div>Full name is required</div>
                 }
-                @if (form.get('fullName')?.errors?.['minlength']) {
+                @if (form.get('fullname')?.errors?.['minlength']) {
                   <div>Full name must be at least 2 characters</div>
                 }
               </div>
