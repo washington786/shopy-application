@@ -1,11 +1,10 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LoadingSpinner } from "../../../shared/loading-spinner/loading-spinner";
-import { NgFor, NgIf } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon'
 @Component({
   selector: 'app-product-management',
-  imports: [LoadingSpinner, NgFor, NgIf, ReactiveFormsModule, MatIconModule],
+  imports: [LoadingSpinner, ReactiveFormsModule, MatIconModule],
   templateUrl: './product-management.html',
   styleUrl: './product-management.css'
 })
@@ -52,7 +51,7 @@ export class ProductManagement implements OnInit {
   ];
 
   // UI State
-  isLoading = false;
+  isLoading = signal(false);
   isModalOpen = false;
   isEditing = false;
   selectedProduct: any = null;
@@ -72,10 +71,10 @@ export class ProductManagement implements OnInit {
   }
 
   ngOnInit() {
-    this.isLoading = true;
+    this.isLoading.set(true);
     // Simulate API delay
     setTimeout(() => {
-      this.isLoading = false;
+      this.isLoading.set(false);
     }, 800);
   }
 
@@ -117,7 +116,7 @@ export class ProductManagement implements OnInit {
       return;
     }
 
-    this.isLoading = true;
+    this.isLoading.set(true);
     // TODO: Connect to ProductService later
     console.log('Product form submitted', {
       ...this.productForm.value,
@@ -126,7 +125,7 @@ export class ProductManagement implements OnInit {
 
     // Simulate API delay
     setTimeout(() => {
-      this.isLoading = false;
+      this.isLoading.set(false);
       if (this.isEditing) {
         // Update mock product
         const index = this.products.findIndex(p => p.id === this.selectedProduct.id);

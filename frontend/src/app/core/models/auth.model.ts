@@ -21,6 +21,8 @@ export interface UserDto {
   email: string;
   fullName: string;
   roles: string[];
+  isActive?: boolean;
+  createdAt?: Date
 };
 
 export interface AuthResponse {

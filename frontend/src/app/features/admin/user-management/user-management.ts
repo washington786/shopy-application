@@ -1,58 +1,31 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LoadingSpinner } from "../../../shared/loading-spinner/loading-spinner";
-import { DatePipe, NgFor, NgIf } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { AuthService } from '../../../core/services/auth-service';
+import { UserDto } from '../../../core/models/auth.model';
+import { AdminService } from '../../../core/services/admin-service';
 
 @Component({
   selector: 'app-user-management',
-  imports: [LoadingSpinner, ReactiveFormsModule, NgFor, NgIf, MatIconModule, DatePipe],
+  imports: [LoadingSpinner, ReactiveFormsModule, MatIconModule, DatePipe],
   templateUrl: './user-management.html',
   styleUrl: './user-management.css'
 })
 export class UserManagement implements OnInit {
-  users = [
-    {
-      id: '1',
-      email: 'admin@shopy.com',
-      fullName: 'Admin User',
-      roles: ['Admin'],
-      isDeleted: false,
-      createdAt: '2024-01-01T10:00:00Z'
-    },
-    {
-      id: '2',
-      email: 'manager@shopy.com',
-      fullName: 'Store Manager',
-      roles: ['StoreManager'],
-      isDeleted: false,
-      createdAt: '2024-02-15T14:30:00Z'
-    },
-    {
-      id: '3',
-      email: 'user1@shopy.com',
-      fullName: 'Regular User',
-      roles: ['User'],
-      isDeleted: false,
-      createdAt: '2024-03-20T09:15:00Z'
-    },
-    {
-      id: '4',
-      email: 'user2@shopy.com',
-      fullName: 'Another User',
-      roles: ['User'],
-      isDeleted: true,
-      createdAt: '2024-04-10T16:45:00Z'
-    }
-  ];
+
+  service = inject(AdminService);
+  users = signal<UserDto[] | null>(null);
 
   // Available roles
   availableRoles = ['User', 'StoreManager', 'Admin'];
 
   // UI State
-  isLoading = false;
+  isLoading = signal(false);
+  error: string | null = null;
   isModalOpen = false;
-  selectedUser: any = null;
+  selectedUser: UserDto | null = null;
 
   // Form
   userForm: FormGroup;
@@ -64,11 +37,21 @@ export class UserManagement implements OnInit {
   }
 
   ngOnInit() {
-    this.isLoading = true;
-    // Simulate API delay
-    setTimeout(() => {
-      this.isLoading = false;
-    }, 800);
+    this.isLoading.set(true);
+    this.service.loadAllUsers().subscribe({
+      next: users => {
+        console.log('users: ', users);
+
+        this.users.set(users);
+        this.isLoading.set(false);
+      }, error: error => {
+        this.error = error;
+        this.users.set(null);
+      },
+      complete: () => {
+        this.isLoading.set(false);
+      }
+    });
   }
 
   openEditModal(user: any) {
@@ -89,39 +72,25 @@ export class UserManagement implements OnInit {
       return;
     }
 
-    this.isLoading = true;
-    // TODO: Connect to AdminService later
-    console.log('User form submitted', {
-      userId: this.selectedUser.id,
-      ...this.userForm.value
-    });
-
+    this.isLoading.set(true);
     // Simulate API delay
     setTimeout(() => {
-      this.isLoading = false;
+      this.isLoading.set(false);
       // Update mock user
-      const index = this.users.findIndex(u => u.id === this.selectedUser.id);
-      if (index !== -1) {
-        this.users[index] = {
-          ...this.users[index],
-          roles: [...this.userForm.value.roles]
-        };
-      }
+      this.users.update(users => {
+        if (!users) return users;
+        return users.map(user => user.id === this.selectedUser?.id ? { ...user, roles: [this.userForm.value?.roles] } : user);
+      })
       this.closeModal();
     }, 1000);
   }
 
   toggleUserStatus(user: any) {
     if (confirm(`Are you sure you want to ${user.isDeleted ? 'activate' : 'deactivate'} this user?`)) {
-      // TODO: Connect to AdminService later
-      console.log('Toggle user status', user.id, !user.isDeleted);
-      const index = this.users.findIndex(u => u.id === user.id);
-      if (index !== -1) {
-        this.users[index] = {
-          ...this.users[index],
-          isDeleted: !user.isDeleted
-        };
-      }
+      this.users.update(users => {
+        if (!users) return users;
+        return users.map(user => user.id === this.selectedUser?.id ? { ...user, isDeleted: !user.isActive } : user);
+      });
     }
   }
 

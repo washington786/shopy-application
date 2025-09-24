@@ -10,7 +10,7 @@ export class CategoryService {
   private url = `/categories`;
 
   getAllCategories() {
-    return this.apiService.get<CategoryDto[]>(`${this.url}`)
+    return this.apiService.get<CategoryDto[]>(`${this.url}/all`)
   }
 
   getCategoryItem(id: number) {
@@ -22,7 +22,7 @@ export class CategoryService {
   }
 
   createCategoryItem(request: CreateCategoryRequest) {
-    return this.apiService.post<CategoryDto>(`${this.url}`, request);
+    return this.apiService.post<CategoryDto>(`${this.url}/create`, request);
   }
 
   removeCategoryItem(id: number) {
