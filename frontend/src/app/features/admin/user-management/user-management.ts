@@ -1,15 +1,17 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { LoadingSpinner } from "../../../shared/loading-spinner/loading-spinner";
 import { DatePipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
-import { AuthService } from '../../../core/services/auth-service';
 import { UserDto } from '../../../core/models/auth.model';
 import { AdminService } from '../../../core/services/admin-service';
+import { MatDialog, MatDialogModule, MatDialogRef } from '@angular/material/dialog';
+import { EditRole } from './edit-role/edit-role';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
 @Component({
   selector: 'app-user-management',
-  imports: [LoadingSpinner, ReactiveFormsModule, MatIconModule, DatePipe],
+  imports: [LoadingSpinner, ReactiveFormsModule, MatIconModule, DatePipe, MatDialogModule],
   templateUrl: './user-management.html',
   styleUrl: './user-management.css'
 })
@@ -17,6 +19,12 @@ export class UserManagement implements OnInit {
 
   service = inject(AdminService);
   users = signal<UserDto[] | null>(null);
+
+  dialogEditUser = inject(MatDialog);
+
+  destroyRef = inject(DestroyRef);
+
+  snackBar = inject(MatSnackBar);
 
   // Available roles
   availableRoles = ['User', 'StoreManager', 'Admin'];
@@ -36,7 +44,7 @@ export class UserManagement implements OnInit {
     });
   }
 
-  usersLength = computed(() => this.users.length);
+  usersLength = computed(() => this.users.length > 0);
 
   ngOnInit() {
     this.isLoading.set(true);
@@ -46,6 +54,7 @@ export class UserManagement implements OnInit {
 
         this.users.set(users);
         this.isLoading.set(false);
+
       }, error: error => {
         this.error = error;
         this.users.set(null);
@@ -56,12 +65,29 @@ export class UserManagement implements OnInit {
     });
   }
 
-  openEditModal(user: any) {
-    this.selectedUser = { ...user };
-    this.userForm.patchValue({
-      roles: [...user.roles]
+  openEditModal(user: UserDto) {
+    const dialogRefModal = this.dialogEditUser.open(EditRole, { data: { roles: user.roles }, width: "60%", height: "40%" });
+    const sub = dialogRefModal.afterClosed().subscribe({
+      next: data => {
+        console.log(data);
+        if (!data) return;
+        const sub = this.service.updateUserRole(data, user.id).subscribe({
+          next: res => {
+            if (!res) return;
+            this.snackBar.open("Roles Updated Successfully", "Ok", { duration: 4000 })
+          }, error: error => {
+            if (error) return;
+            this.snackBar.open("Roles Updated Successfully", "Ok", { duration: 4000 })
+          }
+        });
+        this.destroyRef.onDestroy(() => sub.unsubscribe());
+      },
+      error: error => {
+        console.log(error);
+      }
     });
-    this.isModalOpen = true;
+
+    this.destroyRef.onDestroy(() => sub.unsubscribe());
   }
 
   closeModal() {

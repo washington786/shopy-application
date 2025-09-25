@@ -1,9 +1,9 @@
 <div class="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-lg transition-shadow">
   <img
-    [src]="product.productImageUrl || 'assets/images/placeholder.png'"
+    [src]="product.ImageUrls?.at(0)"
     [alt]="product.name"
     class="w-full h-48 object-cover"
-    (error)="product.productImageUrl = 'assets/images/placeholder.png'"
+    (error)="product.ImageUrls?.length === 0 ?'assets/images/placeholder.png':product.ImageUrls?.at(0)"
   />
   <div class="p-4">
     <h3 class="text-lg font-semibold text-gray-800 mb-2">{{ product.name }}</h3>

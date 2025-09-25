@@ -1,10 +1,4 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <!-- Loading State -->
-  @if (isLoading()) {
-    <div class="flex justify-center py-12">
-      <app-loading-spinner></app-loading-spinner>
-    </div>
-  }
 
   <!-- Header -->
   <div class="mb-8">
@@ -13,8 +7,7 @@
   </div>
 
   <!-- Users Table -->
-
-  @if (!isLoading() && usersLength()!==0) {
+  @if (!isLoading() && users()) {
     <div class="bg-white rounded-lg shadow overflow-hidden">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
@@ -32,7 +25,7 @@
             @for (user of users(); track user) {
               <tr>
                 <td class="px-6 py-4 whitespace-nowrap">
-                  <div class="text-sm font-medium text-gray-900">{{ user.fullName }}</div>
+                  <div class="text-sm font-medium text-gray-900">{{ user.fullname }}</div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="text-sm text-gray-900">{{ user.email }}</div>
@@ -79,11 +72,19 @@
         </table>
       </div>
     </div>
-  }@else {
+  }@else if(!isLoading && users()?.length===0){
     <div class="bg-yellow-100 py-3 px-4 flex items-center justify-center">
       <span class="text-lg text-gray-600">No Users Found!</span>
     </div>
   }
+
+   <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="flex justify-center py-12">
+      <app-loading-spinner></app-loading-spinner>
+    </div>
+  }
+
 
   <!-- User Modal -->
   @if (isModalOpen) {
@@ -96,7 +97,7 @@
             <div class="sm:flex sm:items-start">
               <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
                 <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
-                  Manage User Roles: {{ selectedUser?.fullName }}
+                  Manage User Roles: {{ selectedUser?.fullname }}
                 </h3>
                 <div class="mt-4">
                   <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="space-y-4">

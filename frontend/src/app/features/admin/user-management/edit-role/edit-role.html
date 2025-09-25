@@ -1,0 +1,15 @@
+<div class="flex px-4 py-2 flex-col">
+  <h1 class="text-lg text-gray-600">Assign Roles</h1>
+  <span class="text-sm text-gray-400">you are about to assign the user previledge roles</span>
+  <form [formGroup]="userForm" (submit)="onSubmit()" class="w-full flex flex-col my-7">
+    <mat-form-field class="w-full">
+      <mat-label>Select roles</mat-label>
+      <mat-select [multiple]="true" formControlName="roles">
+        @for (role of roles; track $index) {
+          <mat-option [value]="role">{{role}}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+    <button class="bg-blue-500 uppercase text-white px-10 py-2 rounded-sm w-full" type="submit">Submit</button>
+  </form>
+</div>

@@ -19,7 +19,7 @@ export interface updateProfileRequest {
 export interface UserDto {
   id: string;
   email: string;
-  fullName: string;
+  fullname: string;
   roles: string[];
   isActive?: boolean;
   createdAt?: Date
