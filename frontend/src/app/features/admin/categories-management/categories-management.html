@@ -2,66 +2,72 @@
       <h2 class="text-2xl font-bold mb-6">Category Management</h2>
 
       <!-- Add / Edit Form -->
-      <div class="bg-white p-6 rounded-lg shadow mb-8">
-        <h3 class="text-lg font-medium mb-4">{{ editingCategory ? 'Edit Category' : 'Add New Category' }}</h3>
-        <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()">
-          <div class="grid grid-cols-1 gap-4">
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Name *</label>
-              <input
-                formControlName="name"
-                type="text"
-                class="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                placeholder="e.g. Electronics"
-              />
-              @if (categoryForm.get('name')?.invalid && categoryForm.get('name')?.touched) {
-                <p class="text-red-600 text-sm mt-1">Name is required</p>
-              }
-            </div>
+       <div class="flex items-center justify-end my-3">
+          <button class="flex py-3 px-10 uppercase text-white bg-blue-400" (click)="activateForm()">Add Category</button>
+        </div>
 
-            <div>
-              <label class="block text-sm font-medium text-gray-700">Description</label>
-              <textarea
-                formControlName="description"
-                class="mt-1 block w-full border border-gray-300 rounded-md p-2"
-                rows="3"
-                placeholder="Optional description"
-              ></textarea>
-            </div>
+       @if (isActiveForm()) {
+         <div class="bg-white p-6 rounded-lg shadow mb-8">
+           <h3 class="text-lg font-medium mb-4">{{ editingCategory ? 'Edit Category' : 'Add New Category' }}</h3>
+           <form [formGroup]="categoryForm" (ngSubmit)="onSubmit()">
+             <div class="grid grid-cols-1 gap-4">
+               <div>
+                 <label class="block text-sm font-medium text-gray-700">Name *</label>
+                 <input
+                   formControlName="name"
+                   type="text"
+                   class="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                   placeholder="e.g. Electronics"
+                 />
+                 @if (categoryForm.get('name')?.invalid && categoryForm.get('name')?.touched) {
+                   <p class="text-red-600 text-sm mt-1">Name is required</p>
+                 }
+               </div>
 
-            @if (editingCategory) {
-              <div class="flex items-center">
-                <input
-                  formControlName="isActive"
-                  type="checkbox"
-                  class="h-4 w-4 text-indigo-600"
-                />
-                <label class="ml-2 block text-sm text-gray-700">Active</label>
-              </div>
-            }
+               <div>
+                 <label class="block text-sm font-medium text-gray-700">Description</label>
+                 <textarea
+                   formControlName="description"
+                   class="mt-1 block w-full border border-gray-300 rounded-md p-2"
+                   rows="3"
+                   placeholder="Optional description"
+                 ></textarea>
+               </div>
 
-            <div class="flex space-x-3">
-              <button
-                type="submit"
-                class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
-                [disabled]="categoryForm.invalid || load()"
-              >
-                {{ editingCategory ? 'Update' : 'Create' }}
-              </button>
+               @if (editingCategory) {
+                 <div class="flex items-center">
+                   <input
+                     formControlName="isActive"
+                     type="checkbox"
+                     class="h-4 w-4 text-indigo-600"
+                   />
+                   <label class="ml-2 block text-sm text-gray-700">Active</label>
+                 </div>
+               }
 
-              @if (editingCategory) {
-                <button
-                  type="button"
-                  (click)="cancelEdit()"
-                  class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
-                >
-                  Cancel
-                </button>
-              }
-            </div>
-          </div>
-        </form>
-      </div>
+               <div class="flex space-x-3">
+                 <button
+                   type="submit"
+                   class="px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700"
+                   [disabled]="categoryForm.invalid || load()"
+                 >
+                   {{ editingCategory ? 'Update' : 'Create' }}
+                 </button>
+
+                 @if (editingCategory) {
+                   <button
+                     type="button"
+                     (click)="cancelEdit()"
+                     class="px-4 py-2 bg-gray-300 text-gray-700 rounded-md hover:bg-gray-400"
+                   >
+                     Cancel
+                   </button>
+                 }
+               </div>
+             </div>
+           </form>
+         </div>
+       }
 
       <!-- Loading -->
       @if (load()) {

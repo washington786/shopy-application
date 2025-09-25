@@ -14,6 +14,8 @@ export class CategoriesManagement implements OnInit {
   private service = inject(CategoryService);
   private fb = inject(FormBuilder);
 
+  isActiveForm = signal(false);
+
   categories: CategoryDto[] = [];
   isLoading = false;
   error: string | null = null;
@@ -33,7 +35,9 @@ export class CategoriesManagement implements OnInit {
     this.loadCategories();
   }
 
-
+  activateForm() {
+    this.isActiveForm.set(!this.isActiveForm());
+  }
   loadCategories() {
     this.isLoading = true;
     this.error = null;
