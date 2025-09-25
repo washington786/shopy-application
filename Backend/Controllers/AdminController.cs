@@ -22,11 +22,19 @@ namespace Backend.Controllers
             return Ok(new { message = "Role updated successfully" });
         }
 
-        [HttpGet("/all-users")]
+        [HttpGet("all-users")]
         public async Task<ActionResult<string>> GetActiveUsersAsync([FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
             var res = await service.FetchAllUsersAsync(page, pageSize);
             return Ok(res);
+        }
+
+        [HttpGet("roles")]
+        public async Task<ActionResult> GetRolesAsync()
+        {
+            var roles = await service.GetRoles();
+
+            return Ok(roles);
         }
     }
 }

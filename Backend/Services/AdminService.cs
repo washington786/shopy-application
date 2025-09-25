@@ -1,8 +1,10 @@
 using Backend.DTOs.Requests.Admin;
 using Backend.DTOs.Requests.Auth;
+using Backend.DTOs.Responses.Auth;
 using Backend.Models;
 using Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.EntityFrameworkCore;
 
 namespace Backend.Services;
 
@@ -50,5 +52,11 @@ public class AdminService(UserManager<AppUser> userManager, RoleManager<Identity
             userDtos.Add(new UserDto(user.Id, user.Email, user.FullName, [.. roles]));
         }
         return userDtos;
+    }
+
+    public async Task<List<RolesDtoResponse>> GetRoles()
+    {
+        var roles = await roleManager.Roles.Select(e => new RolesDtoResponse { Id = e.Id, Name = e.Name }).ToListAsync();
+        return roles;
     }
 }
