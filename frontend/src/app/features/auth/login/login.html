@@ -1,0 +1,65 @@
+<div class="max-w-md mx-auto mt-10 p-6 bg-white rounded-lg shadow-md">
+  <h2 class="text-2xl font-bold mb-6 text-center">Login to Shopy</h2>
+
+  @if (error$) {
+    <div class="bg-red-400 text-white px-10 py-4 w-full my-3">
+      {{error$}}
+    </div>
+  }
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" class="space-y-4">
+    <mat-form-field appearance="fill" class="w-full">
+      <mat-label>Email</mat-label>
+      <input matInput formControlName="email" type="email" />
+      @if (emailRequiredError()) {
+        <mat-error>
+          Email is required
+        </mat-error>
+      }
+
+      @if(emailValidError()){
+        <mat-error>
+          Please enter a valid email
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <mat-form-field appearance="fill" class="w-full">
+      <mat-label>Password</mat-label>
+      <input matInput formControlName="password" type="password" />
+      @if (passwordRequiredError()) {
+        <mat-error>
+          Password is required
+        </mat-error>
+      }
+      @if(passwordMinLengthError()){
+        <mat-error>
+          Password must be at least 6 characters
+        </mat-error>
+      }
+    </mat-form-field>
+
+    <button
+      color="primary"
+      type="submit"
+      class="w-full bg-blue-600 px-10 py-3 uppercase text-white"
+      [disabled]="form.invalid"
+    >
+     @if (isLoading$) {
+      <span class="text-sm flex gap-3">
+        <span>loading</span>
+        <app-loading-spinner></app-loading-spinner>
+      </span>
+     }@else {
+      <span class="text-lg"> Login</span>
+     }
+    </button>
+  </form>
+
+  <div class="mt-4 text-center">
+    <span class="text-gray-600">Don't have an account? </span>
+    <a (click)="goToRegister()" class="text-indigo-600 cursor-pointer hover:underline">
+      Register here
+    </a>
+  </div>
+</div>

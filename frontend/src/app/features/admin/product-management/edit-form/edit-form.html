@@ -1,0 +1,126 @@
+<div class="px-6 py-4">
+  <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="space-y-4">
+  <div>
+  <label for="name" class="block text-sm font-medium text-gray-700">Product Name</label>
+  <input
+  id="name"
+  type="text"
+  formControlName="name"
+  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+  placeholder="Wireless Headphones"
+  />
+  @if (productForm.get('name')?.invalid && (productForm.get('name')?.dirty || productForm.get('name')?.touched)) {
+  <div class="text-red-500 text-sm mt-1">
+  @if (productForm.get('name')?.errors?.['required']) {
+    <div>Product name is required</div>
+  }
+  @if (productForm.get('name')?.errors?.['minlength']) {
+    <div>Product name must be at least 2 characters</div>
+  }
+  </div>
+  }
+  </div>
+
+  <div>
+  <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
+  <textarea
+  id="description"
+  formControlName="description"
+  rows="3"
+  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+  placeholder="High-quality wireless headphones..."
+  ></textarea>
+  @if (productForm.get('description')?.invalid && (productForm.get('description')?.dirty || productForm.get('description')?.touched)) {
+  <div class="text-red-500 text-sm mt-1">
+  @if (productForm.get('description')?.errors?.['required']) {
+    <div>Description is required</div>
+  }
+  </div>
+  }
+  </div>
+
+  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+  <div>
+  <label for="price" class="block text-sm font-medium text-gray-700">Price (R)</label>
+  <input
+  id="price"
+  type="number"
+  step="0.01"
+  formControlName="price"
+  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+  placeholder="99.99"
+  />
+  @if (productForm.get('price')?.invalid && (productForm.get('price')?.dirty || productForm.get('price')?.touched)) {
+  <div class="text-red-500 text-sm mt-1">
+    @if (productForm.get('price')?.errors?.['required']) {
+      <div>Price is required</div>
+    }
+    @if (productForm.get('price')?.errors?.['min']) {
+      <div>Price must be greater than 0</div>
+    }
+  </div>
+  }
+  </div>
+
+  <div>
+  <label for="stock" class="block text-sm font-medium text-gray-700">Stock</label>
+  <input
+  id="stock"
+  type="number"
+  formControlName="stock"
+  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+  placeholder="50"
+  />
+  @if (productForm.get('stock')?.invalid && (productForm.get('stock')?.dirty || productForm.get('stock')?.touched)) {
+  <div class="text-red-500 text-sm mt-1">
+    @if (productForm.get('stock')?.errors?.['required']) {
+      <div>Stock is required</div>
+    }
+    @if (productForm.get('stock')?.errors?.['min']) {
+      <div>Stock cannot be negative</div>
+    }
+  </div>
+  }
+  </div>
+  </div>
+
+  <div>
+  <label for="productImageUrls" class="block text-sm font-medium text-gray-700">Image URL (Optional)</label>
+  <input
+  id="productImageUrls"
+  type="text"
+  formControlName="productImageUrls"
+  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+  placeholder="/assets/images/product.jpg"
+  />
+  </div>
+
+  <div>
+  <label for="categoryId" class="block text-sm font-medium text-gray-700">Category</label>
+
+  <select
+  id="categoryId"
+  formControlName="categoryId"
+  class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+  [selectedIndex]="product.categoryId"
+  >
+  <option value="">Select a category</option>
+  @if (categories(); as categories) {
+  @for (category of categories; track category.id) {
+  <option [value]="category.id">{{ category.name }}</option>
+  }
+  }
+  </select>
+
+  @if (productForm.get('categoryId')?.invalid && (productForm.get('categoryId')?.dirty || productForm.get('categoryId')?.touched)) {
+  <div class="text-red-500 text-sm mt-1">
+  @if (productForm.get('categoryId')?.errors?.['required']) {
+    <div>Category is required</div>
+  }
+  </div>
+  }
+  </div>
+
+  <button class="bg-blue-500 px-10 w-full py-3 rounded-sm" type="submit">submit</button>
+  </form>
+</div>

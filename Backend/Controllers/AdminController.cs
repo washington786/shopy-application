@@ -28,5 +28,13 @@ namespace Backend.Controllers
             var res = await service.FetchAllUsersAsync(page, pageSize);
             return Ok(res);
         }
+
+        [HttpGet("roles")]
+        public async Task<ActionResult> GetRolesAsync()
+        {
+            var roles = await service.GetRoles();
+
+            return Ok(roles);
+        }
     }
 }

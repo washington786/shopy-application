@@ -1,0 +1,175 @@
+<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+
+  <!-- Header -->
+  <div class="mb-8">
+    <h1 class="text-3xl font-bold text-gray-900">User Management</h1>
+    <p class="mt-2 text-sm text-gray-600">Manage user accounts and assign roles</p>
+  </div>
+
+  <!-- Users Table -->
+  @if (!isLoading() && users()) {
+    <div class="bg-white rounded-lg shadow overflow-hidden">
+      <div class="overflow-x-auto">
+        <table class="min-w-full divide-y divide-gray-200">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Name</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Roles</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+              <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Created</th>
+              <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+            </tr>
+          </thead>
+          <tbody class="bg-white divide-y divide-gray-200">
+            @for (user of users(); track user) {
+              <tr>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm font-medium text-gray-900">{{ user.fullname }}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="text-sm text-gray-900">{{ user.email }}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <div class="flex flex-wrap gap-1">
+                    @for (role of user.roles; track role) {
+                      <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-indigo-100 text-indigo-800">
+                        {{ role }}
+                      </span>
+                    }
+                  </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                  <span
+                    [class]="user.isActive ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800'"
+                    class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                  >
+                    {{ user.isActive ? 'Deactivated' : 'Active' }}
+                  </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                  {{ user.createdAt | date:'medium' }}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                  <button
+                    (click)="openEditModal(user)"
+                    class="text-indigo-600 hover:text-indigo-900 mr-3"
+                  >
+                    <mat-icon>edit</mat-icon>
+                  </button>
+                  <button
+                    (click)="toggleUserStatus(user)"
+                    [class.text-green-600]="user.isActive"
+                    [class.text-red-600]="!user.isActive"
+                    class="hover:text-opacity-80"
+                  >
+                    <mat-icon>{{ user.isActive ? 'restore_from_trash' : 'delete' }}</mat-icon>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }@else if(!isLoading && users()?.length===0){
+    <div class="bg-yellow-100 py-3 px-4 flex items-center justify-center">
+      <span class="text-lg text-gray-600">No Users Found!</span>
+    </div>
+  }
+
+   <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="flex justify-center py-12">
+      <app-loading-spinner></app-loading-spinner>
+    </div>
+  }
+
+  <!-- User Modal -->
+  @if (isModalOpen) {
+    <div class="fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+      <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" (click)="closeModal()"></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+          <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+            <div class="sm:flex sm:items-start">
+              <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
+                  Manage User Roles: {{ selectedUser?.fullname }}
+                </h3>
+                <div class="mt-4">
+                  <form [formGroup]="userForm" (ngSubmit)="onSubmit()" class="space-y-4">
+                    <div>
+                      <label class="block text-sm font-medium text-gray-700 mb-2">Assign Roles</label>
+                      <div class="space-y-2">
+                        @for (role of availableRoles; track role) {
+                          <div class="flex items-center">
+                            <input
+                              id="role-{{ role }}"
+                              type="checkbox"
+                              [checked]="isRoleSelected(role)"
+                              (change)="toggleRole(role)"
+                              class="focus:ring-indigo-500 h-4 w-4 text-indigo-600 border-gray-300 rounded"
+                            />
+                            <label for="role-{{ role }}" class="ml-3 block text-sm text-gray-700">
+                              {{ role }}
+                            </label>
+                          </div>
+                        }
+                      </div>
+                      @if (userForm.get('roles')?.invalid && (userForm.get('roles')?.dirty || userForm.get('roles')?.touched)) {
+                        <div class="text-red-500 text-sm mt-1">
+                          @if (userForm.get('roles')?.errors?.['required']) {
+                            <div>At least one role is required</div>
+                          }
+                        </div>
+                      }
+                    </div>
+
+                    <div class="bg-gray-50 p-4 rounded-md">
+                      <h4 class="text-sm font-medium text-gray-900 mb-2">User Information</h4>
+                      <div class="text-sm text-gray-600 space-y-1">
+                        <p><strong>Email:</strong> {{ selectedUser?.email }}</p>
+                        <p><strong>Created:</strong> {{ selectedUser?.createdAt | date:'medium' }}</p>
+                        <p><strong>Status:</strong>
+                          <span [class]="selectedUser?.isActive">
+                            {{ selectedUser?.isActive }}
+                          </span>
+                        </p>
+                      </div>
+                    </div>
+                  </form>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+            <button
+              type="submit"
+              (click)="onSubmit()"
+              [disabled]="isLoading()"
+              class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+            >
+              @if (!isLoading()) {
+                <span>Save Changes</span>
+              } @else {
+                <span class="flex items-center">
+                  <app-loading-spinner></app-loading-spinner>
+                  <span class="ml-2">Saving...</span>
+                </span>
+              }
+            </button>
+            <button
+              type="button"
+              (click)="closeModal()"
+              class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  }
+</div>
