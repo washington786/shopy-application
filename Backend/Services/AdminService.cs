@@ -40,7 +40,7 @@ public class AdminService(UserManager<AppUser> userManager, RoleManager<Identity
 
     public async Task<List<UserDto>> FetchAllUsersAsync(int page = 1, int pageSize = 10)
     {
-        var users = userManager.Users.Where(u => !u.IsActive).Skip((page - 1) * pageSize).Take(pageSize).ToList();
+        var users = userManager.Users.Skip((page - 1) * pageSize).Take(pageSize).ToList();
         var userDtos = new List<UserDto>();
 
         foreach (var user in users)
