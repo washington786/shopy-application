@@ -114,7 +114,6 @@ export class ProductsList {
 
   ngOnInit() {
     // this.isLoading = true;
-    // // Simulate API delay
     let sub = this.service.getAllProducts().subscribe({
       next: res => {
         this.products = res;
