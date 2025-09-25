@@ -1,10 +1,4 @@
 <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-  <!-- Loading State -->
-  @if (isLoading()) {
-    <div class="flex justify-center py-12">
-      <app-loading-spinner></app-loading-spinner>
-    </div>
-  }
 
   <!-- Header -->
   <div class="mb-8 flex justify-between items-center">
@@ -17,6 +11,13 @@
       Add New Product
     </button>
   </div>
+
+  <!-- Loading State -->
+  @if (isLoading()) {
+    <div class="flex justify-center py-12">
+      <app-loading-spinner></app-loading-spinner>
+    </div>
+  }
 
   <!-- Products Table -->
   @if (!isLoading()) {
@@ -38,7 +39,7 @@
               <tr>
                 <td class="px-6 py-4 whitespace-nowrap">
                   <div class="h-10 w-10 bg-gray-200 rounded-md overflow-hidden">
-                    <img [src]="product.productImageUrl" [alt]="product.name" class="h-full w-full object-cover" />
+                    <img [src]="product.ImageUrls?.at(0)" [alt]="product.name" class="h-full w-full object-cover" />
                   </div>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap">
@@ -51,14 +52,14 @@
                   </span>
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  ${{ product.price }}
+                  {{ product.price |currency:"R"}}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
                   {{ product.stock }}
                 </td>
                 <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                   <button
-                    (click)="openEditModal(product)"
+                    (click)="openEditDialog(product)"
                     class="text-indigo-600 hover:text-indigo-900 mr-3"
                   >
                     <mat-icon>edit</mat-icon>
@@ -74,175 +75,6 @@
             }
           </tbody>
         </table>
-      </div>
-    </div>
-  }
-
-  <!-- Product Modal -->
-  @if (isModalOpen) {
-    <div class="fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
-      <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-30 backdrop-blur-sm transition-opacity" aria-hidden="true" (click)="closeModal()"></div>
-        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-        <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
-          <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-            <div class="sm:flex sm:items-start">
-              <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
-                <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">
-                  {{ isEditing ? 'Edit Product' : 'Add New Product' }}
-                </h3>
-                <div class="mt-4">
-                  <form [formGroup]="productForm" (ngSubmit)="onSubmit()" class="space-y-4">
-                    <div>
-                      <label for="name" class="block text-sm font-medium text-gray-700">Product Name</label>
-                      <input
-                        id="name"
-                        type="text"
-                        formControlName="name"
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                        placeholder="Wireless Headphones"
-                      />
-                      @if (productForm.get('name')?.invalid && (productForm.get('name')?.dirty || productForm.get('name')?.touched)) {
-                        <div class="text-red-500 text-sm mt-1">
-                          @if (productForm.get('name')?.errors?.['required']) {
-                            <div>Product name is required</div>
-                          }
-                          @if (productForm.get('name')?.errors?.['minlength']) {
-                            <div>Product name must be at least 2 characters</div>
-                          }
-                        </div>
-                      }
-                    </div>
-
-                    <div>
-                      <label for="description" class="block text-sm font-medium text-gray-700">Description</label>
-                      <textarea
-                        id="description"
-                        formControlName="description"
-                        rows="3"
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                        placeholder="High-quality wireless headphones..."
-                      ></textarea>
-                      @if (productForm.get('description')?.invalid && (productForm.get('description')?.dirty || productForm.get('description')?.touched)) {
-                        <div class="text-red-500 text-sm mt-1">
-                          @if (productForm.get('description')?.errors?.['required']) {
-                            <div>Description is required</div>
-                          }
-                        </div>
-                      }
-                    </div>
-
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div>
-                        <label for="price" class="block text-sm font-medium text-gray-700">Price ($)</label>
-                        <input
-                          id="price"
-                          type="number"
-                          step="0.01"
-                          formControlName="price"
-                          class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                          placeholder="99.99"
-                        />
-                        @if (productForm.get('price')?.invalid && (productForm.get('price')?.dirty || productForm.get('price')?.touched)) {
-                          <div class="text-red-500 text-sm mt-1">
-                            @if (productForm.get('price')?.errors?.['required']) {
-                              <div>Price is required</div>
-                            }
-                            @if (productForm.get('price')?.errors?.['min']) {
-                              <div>Price must be greater than 0</div>
-                            }
-                          </div>
-                        }
-                      </div>
-
-                      <div>
-                        <label for="stock" class="block text-sm font-medium text-gray-700">Stock</label>
-                        <input
-                          id="stock"
-                          type="number"
-                          formControlName="stock"
-                          class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                          placeholder="50"
-                        />
-                        @if (productForm.get('stock')?.invalid && (productForm.get('stock')?.dirty || productForm.get('stock')?.touched)) {
-                          <div class="text-red-500 text-sm mt-1">
-                            @if (productForm.get('stock')?.errors?.['required']) {
-                              <div>Stock is required</div>
-                            }
-                            @if (productForm.get('stock')?.errors?.['min']) {
-                              <div>Stock cannot be negative</div>
-                            }
-                          </div>
-                        }
-                      </div>
-                    </div>
-
-                    <div>
-                      <label for="productImageUrl" class="block text-sm font-medium text-gray-700">Image URL (Optional)</label>
-                      <input
-                        id="productImageUrl"
-                        type="text"
-                        formControlName="productImageUrl"
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                        placeholder="/assets/images/product.jpg"
-                      />
-                    </div>
-
-                    <div>
-                      <label for="categoryId" class="block text-sm font-medium text-gray-700">Category</label>
-
-                      <select
-                    id="categoryId"
-                    formControlName="categoryId"
-                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                  >
-                    <option value="">Select a category</option>
-                    @if (categories_(); as categories) {
-                      @for (category of categories; track category.id) {
-                        <option [value]="category.id">{{ category.name }}</option>
-                      }
-                    }
-                  </select>
-
-                      @if (productForm.get('categoryId')?.invalid && (productForm.get('categoryId')?.dirty || productForm.get('categoryId')?.touched)) {
-                        <div class="text-red-500 text-sm mt-1">
-                          @if (productForm.get('categoryId')?.errors?.['required']) {
-                            <div>Category is required</div>
-                          }
-                        </div>
-                      }
-                    </div>
-                  </form>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
-            <button
-              type="submit"
-              (click)="onSubmit()"
-              [disabled]="isLoading()"
-              class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              @if (!isLoading()) {
-                {{ isEditing ? 'Update Product' : 'Create Product' }}
-              }
-              @if (isLoading()) {
-                <span class="flex items-center">
-                  <app-loading-spinner></app-loading-spinner>
-                  <span class="ml-2">Saving...</span>
-                </span>
-              }
-            </button>
-            <button
-              type="button"
-              (click)="closeModal()"
-              class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   }

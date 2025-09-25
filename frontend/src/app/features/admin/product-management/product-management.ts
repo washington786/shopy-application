@@ -9,10 +9,12 @@ import { CategoryService } from '../../../core/services/category-service';
 import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar'
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { AddForm } from './add-form/add-form';
+import { EditForm } from './edit-form/edit-form';
+import { CurrencyPipe } from '@angular/common';
 
 @Component({
   selector: 'app-product-management',
-  imports: [LoadingSpinner, ReactiveFormsModule, MatIconModule, MatDialogModule, MatSnackBarModule],
+  imports: [LoadingSpinner, ReactiveFormsModule, MatIconModule, MatDialogModule, MatSnackBarModule, CurrencyPipe],
   templateUrl: './product-management.html',
   styleUrl: './product-management.css'
 })
@@ -56,10 +58,10 @@ export class ProductManagement implements OnInit {
 
   openDialog() {
     const dialogRef = this.dialog.open(AddForm, { width: "80%", height: "80%" });
-    dialogRef.afterClosed().subscribe({
+    const sub = dialogRef.afterClosed().subscribe({
       next: product => {
         console.log('Form Data: ', product);
-        let sub = this.service.createProduct(product).subscribe({
+        const sub = this.service.createProduct(product).subscribe({
           next: res => {
             if (res)
               this.snackBar.open("Item added successfully.", "Ok", { duration: 3000 });
@@ -75,7 +77,32 @@ export class ProductManagement implements OnInit {
         this.error = error;
         console.log('Form Error: ', error);
       }
-    })
+    });
+    this.destroyRef.onDestroy(() => sub.unsubscribe());
+  }
+
+  openEditDialog(prod: ProductDto) {
+    console.log(prod);
+
+    const editDialogRef = this.dialog.open(EditForm, { width: "80%", height: "80%", data: { product: prod, categories_: this.categories_() } });
+    const sub = editDialogRef.afterClosed().subscribe({
+      next: product => {
+        if (!product) return;
+        console.log('form-data: ', product);
+
+        const sub = this.service.updateProductDetails(prod.id, product).subscribe({
+          next: () => {
+            this.snackBar.open("Product Updated successfully.", "Ok", { duration: 5000 });
+            this.loadproducts();
+          },
+          error: error => {
+            this.snackBar.open(`${error}`, "Ok", { duration: 5000 });
+          }
+        });
+        this.destroyRef.onDestroy(() => sub.unsubscribe());
+      }
+    });
+    this.destroyRef.onDestroy(() => sub.unsubscribe());
   }
 
   loadCategories() {
@@ -108,37 +135,6 @@ export class ProductManagement implements OnInit {
     this.destroyRef.onDestroy(() => sub.unsubscribe());
   }
 
-  openCreateModal() {
-    this.isEditing = false;
-    this.selectedProduct = null;
-    this.productForm.reset({
-      name: '',
-      description: '',
-      price: '',
-      stock: '',
-      productImageUrl: '',
-      categoryId: ''
-    });
-    this.isModalOpen = true;
-  }
-
-  openEditModal(product: any) {
-    this.isEditing = true;
-    this.selectedProduct = { ...product };
-    this.productForm.patchValue({
-      name: product.name,
-      description: product.description,
-      price: product.price,
-      stock: product.stock,
-      productImageUrl: product.productImageUrl,
-      categoryId: product.categoryId
-    });
-    this.isModalOpen = true;
-  }
-
-  closeModal() {
-    this.isModalOpen = false;
-  }
 
   onSubmit() {
     if (this.productForm.invalid) {
@@ -195,6 +191,7 @@ export class ProductManagement implements OnInit {
       this.destroyRef.onDestroy(() => sub.unsubscribe());
     }
   }
+
   private markFormGroupTouched(formGroup: FormGroup) {
     Object.values(formGroup.controls).forEach(control => {
       control.markAsTouched();

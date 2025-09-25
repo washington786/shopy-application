@@ -4,7 +4,7 @@ export interface ProductDto {
   description: string | null;
   price: number;
   stock: number;
-  productImageUrl: string | null;
+  ImageUrls?: string[];
   categoryId: number;
   categoryName: string;
   createdAt: string;
