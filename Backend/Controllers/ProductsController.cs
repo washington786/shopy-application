@@ -13,7 +13,7 @@ namespace Backend.Controllers
         private readonly IProductService service = productService;
 
         [HttpGet("all-products")]
-        public async Task<ActionResult<string>> GetAllProductsAsync()
+        public async Task<ActionResult> GetAllProductsAsync()
         {
             var res = await service.GetAllAsync();
             return Ok(res);
