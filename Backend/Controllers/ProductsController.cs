@@ -33,7 +33,7 @@ namespace Backend.Controllers
             if (!ModelState.IsValid) return BadRequest(new { message = "invalid input fields" });
 
             var res = await service.CreateAsync(createProductRequest);
-            return CreatedAtAction(nameof(GetProductByIdAsync), new { id = res.Id }, res);
+            return Ok(res);
         }
         [Authorize(Roles = "Admin,StoreManager")]
         [HttpPut("{productId}")]
