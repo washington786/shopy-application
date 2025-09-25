@@ -4,34 +4,40 @@ import { LoadingSpinner } from "../../../shared/loading-spinner/loading-spinner"
 import { MatIconModule } from '@angular/material/icon'
 import { ProductService } from '../../../core/services/product-service';
 import { ProductDto } from '../../../core/models/product.model';
+import { CategoryDto } from '../../../core/models/category.model';
+import { CategoryService } from '../../../core/services/category-service';
+import { MatSnackBar, MatSnackBarModule } from '@angular/material/snack-bar'
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { AddForm } from './add-form/add-form';
+
 @Component({
   selector: 'app-product-management',
-  imports: [LoadingSpinner, ReactiveFormsModule, MatIconModule],
+  imports: [LoadingSpinner, ReactiveFormsModule, MatIconModule, MatDialogModule, MatSnackBarModule],
   templateUrl: './product-management.html',
   styleUrl: './product-management.css'
 })
 export class ProductManagement implements OnInit {
-
-  // Mock categories
-  categories = [
-    { id: 1, name: 'Electronics' },
-    { id: 2, name: 'Books' },
-    { id: 3, name: 'Clothing' },
-    { id: 4, name: 'Home & Kitchen' }
-  ];
-
   // UI State
   isLoading = signal(false);
   service = inject(ProductService);
+  snackBar = inject(MatSnackBar);
+
   destroyRef = inject(DestroyRef);
   products = signal<ProductDto[] | null>([]);
+  categoryService = inject(CategoryService);
+
   isModalOpen = false;
   isEditing = false;
   error: string | null = null;
   selectedProduct: ProductDto | null = null;
 
+  // categories
+  categories_ = signal<CategoryDto[] | null>(null);
+
   // Forms
   productForm: FormGroup;
+
+  dialog = inject(MatDialog);
 
   constructor(private fb: FormBuilder) {
     this.productForm = this.fb.group({
@@ -48,6 +54,45 @@ export class ProductManagement implements OnInit {
     this.loadproducts();
   }
 
+  openDialog() {
+    const dialogRef = this.dialog.open(AddForm, { width: "80%", height: "80%" });
+    dialogRef.afterClosed().subscribe({
+      next: product => {
+        console.log('Form Data: ', product);
+        let sub = this.service.createProduct(product).subscribe({
+          next: res => {
+            if (res)
+              this.snackBar.open("Item added successfully.", "Ok", { duration: 3000 });
+            this.loadproducts();
+          },
+          error: error => {
+            this.snackBar.open(`${error}`, "Ok", { duration: 4000 });
+          }
+        });
+        this.destroyRef.onDestroy(() => sub.unsubscribe());
+      },
+      error: error => {
+        this.error = error;
+        console.log('Form Error: ', error);
+      }
+    })
+  }
+
+  loadCategories() {
+    this.isLoading.set(true);
+    let sub = this.categoryService.getAllCategories().subscribe({
+      next: categories => {
+        this.categories_.set(categories);
+        this.isLoading.set(false);
+      },
+      error: error => {
+        this.error = error;
+        this.isLoading.set(false);
+      }
+    });
+    this.destroyRef.onDestroy(() => sub.unsubscribe());
+  }
+
   loadproducts() {
     this.isLoading.set(true);
     let sub = this.service.getAllProducts().subscribe({
@@ -57,6 +102,7 @@ export class ProductManagement implements OnInit {
       },
       error: error => {
         this.error = error;
+        this.isLoading.set(false);
       }
     });
     this.destroyRef.onDestroy(() => sub.unsubscribe());
@@ -149,7 +195,6 @@ export class ProductManagement implements OnInit {
       this.destroyRef.onDestroy(() => sub.unsubscribe());
     }
   }
-
   private markFormGroupTouched(formGroup: FormGroup) {
     Object.values(formGroup.controls).forEach(control => {
       control.markAsTouched();

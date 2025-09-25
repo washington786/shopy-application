@@ -7,18 +7,18 @@ import { CategoryDto, CreateCategoryRequest, UpdateCategoryRequest } from '../mo
 })
 export class CategoryService {
   private apiService = inject(ApiService);
-  private url = `/categories`;
+  private url = `categories`;
 
   getAllCategories() {
-    return this.apiService.get<CategoryDto[]>(`${this.url}/all`)
+    return this.apiService.get<CategoryDto[]>(`/${this.url}/all`)
   }
 
   getCategoryItem(id: number) {
-    return this.apiService.get<CategoryDto>(`${this.url}/${id}`);
+    return this.apiService.get<CategoryDto>(`/${this.url}/${id}`);
   }
 
   updateCategoryItem(id: number, request: UpdateCategoryRequest) {
-    return this.apiService.put<CategoryDto>(`${this.url}/${id}`, request);
+    return this.apiService.put<CategoryDto>(`/${this.url}/${id}`, request);
   }
 
   createCategoryItem(request: CreateCategoryRequest) {

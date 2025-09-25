@@ -7,18 +7,18 @@ import { CreateProductRequest, ProductDto, UpdateProductRequest } from '../model
 })
 export class ProductService {
   private apiService = inject(ApiService);
-  private productsUrl = `/products`;
+  private productsUrl = `products`;
 
   getAllProducts() {
-    return this.apiService.get<ProductDto[]>(`${this.productsUrl}/all-products`);
+    return this.apiService.get<ProductDto[]>(`/${this.productsUrl}/all-products`);
   }
 
   getProduct(id: number) {
-    return this.apiService.get<ProductDto>(`${this.productsUrl}/${id}`);
+    return this.apiService.get<ProductDto>(`/${this.productsUrl}/${id}`);
   }
 
   updateProductDetails(id: number, request: UpdateProductRequest) {
-    return this.apiService.put<ProductDto>(`${this.productsUrl}/${id}`, request);
+    return this.apiService.put<ProductDto>(`/${this.productsUrl}/${id}`, request);
   }
 
   removeProduct(id: number) {
@@ -26,6 +26,6 @@ export class ProductService {
   }
 
   createProduct(request: CreateProductRequest) {
-    return this.apiService.post<ProductDto>(`${this.productsUrl}`, request);
+    return this.apiService.post<ProductDto>(`${this.productsUrl}/create-product`, request);
   }
 }

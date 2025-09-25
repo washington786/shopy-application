@@ -10,7 +10,7 @@
   <div class="mb-8 flex justify-between items-center">
     <h1 class="text-3xl font-bold text-gray-900">Product Management</h1>
     <button
-      (click)="openCreateModal()"
+      (click)="openDialog()"
      class="px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700"
     >
       <mat-icon class="mr-2">add </mat-icon>
@@ -19,7 +19,7 @@
   </div>
 
   <!-- Products Table -->
-  @if (!isLoading) {
+  @if (!isLoading()) {
     <div class="bg-white rounded-lg shadow overflow-hidden">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-gray-200">
@@ -82,7 +82,7 @@
   @if (isModalOpen) {
     <div class="fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
       <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" (click)="closeModal()"></div>
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-30 backdrop-blur-sm transition-opacity" aria-hidden="true" (click)="closeModal()"></div>
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
         <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
           <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
@@ -190,16 +190,20 @@
 
                     <div>
                       <label for="categoryId" class="block text-sm font-medium text-gray-700">Category</label>
+
                       <select
-                        id="categoryId"
-                        formControlName="categoryId"
-                        class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
-                      >
-                        <option value="">Select a category</option>
-                        @for (category of categories; track category.id) {
-                          <option [value]="category.id">{{ category.name }}</option>
-                        }
-                      </select>
+                    id="categoryId"
+                    formControlName="categoryId"
+                    class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500"
+                  >
+                    <option value="">Select a category</option>
+                    @if (categories_(); as categories) {
+                      @for (category of categories; track category.id) {
+                        <option [value]="category.id">{{ category.name }}</option>
+                      }
+                    }
+                  </select>
+
                       @if (productForm.get('categoryId')?.invalid && (productForm.get('categoryId')?.dirty || productForm.get('categoryId')?.touched)) {
                         <div class="text-red-500 text-sm mt-1">
                           @if (productForm.get('categoryId')?.errors?.['required']) {
@@ -217,10 +221,10 @@
             <button
               type="submit"
               (click)="onSubmit()"
-              [disabled]="isLoading"
+              [disabled]="isLoading()"
               class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:ml-3 sm:w-auto sm:text-sm disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              @if (!isLoading) {
+              @if (!isLoading()) {
                 {{ isEditing ? 'Update Product' : 'Create Product' }}
               }
               @if (isLoading()) {

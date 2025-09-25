@@ -16,7 +16,7 @@ export interface CreateProductRequest {
   description?: string;
   price: number;
   stock: number;
-  productImageUrl?: string;
+  ImageUrls?: string[];
   categoryId: number;
 }
 

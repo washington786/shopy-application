@@ -3,17 +3,12 @@ import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angula
 import { Router } from '@angular/router';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field'
-import { Observable } from 'rxjs';
-import { Store } from '@ngrx/store';
-import { selectAuthError, selectAuthLoading, selectIsAuthenticated } from '../../../store/selectors/auth-selector';
-import { loginAction } from '../../../store/actions/auth-actions';
-import { AsyncPipe } from '@angular/common';
 import { LoadingSpinner } from "../../../shared/loading-spinner/loading-spinner";
 import { LoginRequest } from '../../../core/models/auth.model';
 import { AuthService } from '../../../core/services/auth-service';
 @Component({
   selector: 'app-login',
-  imports: [ReactiveFormsModule, MatInputModule, MatFormFieldModule, AsyncPipe, LoadingSpinner],
+  imports: [ReactiveFormsModule, MatInputModule, MatFormFieldModule, LoadingSpinner],
   templateUrl: './login.html',
   styleUrl: './login.css'
 })
@@ -56,7 +51,11 @@ export class Login implements OnInit {
       next: res => {
         localStorage.setItem("token", res.token);
         this.isLoading$ = false;
-        this.router.navigate(["/app/products"]);
+        if (res.userDto.roles.includes("Admin") || res.userDto.roles.includes("StoreManager")) {
+          this.router.navigate(["/admin/products"]);
+        } else if (res.userDto.roles.includes("User")) {
+          this.router.navigate(["/app/products"]);
+        }
       },
       error: (err) => {
         this.error$ = err;
