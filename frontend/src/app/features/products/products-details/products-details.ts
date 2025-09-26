@@ -1,7 +1,7 @@
 import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon';
-import { DatePipe } from '@angular/common';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import { LoadingSpinner } from "../../../shared/loading-spinner/loading-spinner";
 import { ProductDto } from '../../../core/models/product.model';
 import { ProductService } from '../../../core/services/product-service';
@@ -9,7 +9,7 @@ import { CartService } from '../../../core/services/cart-service';
 import { MatSnackBar } from '@angular/material/snack-bar';
 @Component({
   selector: 'app-products-details',
-  imports: [MatIconModule, DatePipe, LoadingSpinner],
+  imports: [MatIconModule, DatePipe, LoadingSpinner, CurrencyPipe],
   templateUrl: './products-details.html',
   styleUrl: './products-details.css'
 })
