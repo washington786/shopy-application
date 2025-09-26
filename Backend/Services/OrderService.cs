@@ -17,7 +17,7 @@ public class OrderService(ICartService service, ApplicationDbContext dbContext) 
     {
         var cartItems = await context.CartItems.Where(p => p.UserId == userId).Include(p => p.Product).ToListAsync();
 
-        if (cartItems.Any()) throw new InvalidOperationException("your Cart is empty!");
+        if (!cartItems.Any()) throw new InvalidOperationException("your Cart is empty!");
 
         decimal totalAmount = 0;
 

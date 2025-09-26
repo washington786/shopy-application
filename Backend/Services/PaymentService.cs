@@ -61,10 +61,11 @@ public class PaymentService(ApplicationDbContext applicationDb, IOrderService or
 
     public async Task<CheckoutSessionResponse> CreateCheckOut(string userId)
     {
-        var order = await orderService.AddOrderasync(userId, new());
         var cartItems = await dbContext.CartItems.Where(d => d.UserId == userId).Include(o => o.Product).ToListAsync();
 
         if (cartItems.Count == 0) throw new KeyNotFoundException("Cart is empty");
+
+        var order = await orderService.AddOrderasync(userId, new());
 
         var stripeItems = cartItems.Select(cartitem => new SessionLineItemOptions
         {
