@@ -31,9 +31,12 @@ namespace Backend.Controllers
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
             var sessionId = confirmPaymentDto.SessionId;
+            var orderId = await service.ConfirmPayment(sessionId);
 
-            var res = await service.ConfirmPayment(sessionId);
-            return Ok(res);
+            if (orderId == -1)
+                return BadRequest(new { message = "Payment not completed yet." });
+
+            return Ok(new { orderId });
         }
     }
 }

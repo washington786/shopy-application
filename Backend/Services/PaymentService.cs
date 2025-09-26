@@ -18,46 +18,33 @@ public class PaymentService(ApplicationDbContext applicationDb, IOrderService or
 
     public async Task<int> ConfirmPayment(string sessionId)
     {
-        // StripeConfiguration.ApiKey = _stripeSecretKey;
+        var service = new SessionService();
+        var session = await service.GetAsync(sessionId);
 
-        var sessionService = new SessionService();
+        if (session is null)
+            throw new InvalidOperationException("Payment session not found.");
 
-        var session = await sessionService.GetAsync(sessionId);
+        Console.WriteLine($"SessionId: {sessionId}, PaymentStatus: {session.PaymentStatus}");
 
-        if (session.PaymentStatus != "Paid")
+        if (session.PaymentStatus?.ToLower() != "paid")
         {
-            throw new InvalidOperationException("Sorry, order not completed(paid).");
+            return -1;
         }
 
-        if (!session.Metadata.TryGetValue("OrderId", out string orderIdStr) || !long.TryParse(orderIdStr, out long orderId))
+        // If paid, create the order in DB
+        var order = new Order
         {
-            throw new KeyNotFoundException("Invalid order id");
-        }
+            UserId = session.ClientReferenceId,
+            TotalAmount = (int)session.AmountTotal!,
+            Status = "Paid"
+        };
 
-        var order = await dbContext.Orders.FindAsync(orderId);
-
-        if (order is null || order.Status != "Pending") throw new InvalidOperationException("Invalid Order");
-
-        order.UpdatedAt = DateTime.UtcNow;
-        order.Status = "Paid";
-
-        var payment = await dbContext.Payments.FirstOrDefaultAsync(p => p.SessionId == sessionId);
-
-        if (payment is not null)
-        {
-            payment.Status = "Successful";
-        }
-
-        await dbContext.SaveChangesAsync();
-
-        var cartItems = dbContext.CartItems.Where(i => i.UserId == order.UserId);
-
-        dbContext.CartItems.RemoveRange(cartItems);
-
+        await dbContext.Orders.AddAsync(order);
         await dbContext.SaveChangesAsync();
 
         return order.Id;
     }
+
 
     public async Task<CheckoutSessionResponse> CreateCheckOut(string userId)
     {
