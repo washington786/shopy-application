@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Stripe;
 
 namespace BackendAPI.Utils;
 
@@ -102,5 +103,10 @@ public class DependencyHelper(IConfiguration configuration, IServiceCollection s
             options.AddPolicy("dev", op => op.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
             options.AddPolicy("prod", op => op.AllowAnyHeader().AllowAnyMethod().AllowAnyOrigin());
         });
+    }
+
+    public void ConfigureStripe()
+    {
+        StripeConfiguration.ApiKey = _config["Stripe:SecretKey"];
     }
 }

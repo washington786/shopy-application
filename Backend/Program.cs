@@ -6,7 +6,6 @@ using Microsoft.EntityFrameworkCore;
 using TaskManager.Services;
 
 var builder = WebApplication.CreateBuilder(args);
-
 // IIS
 builder.WebHost.UseIISIntegration();
 
@@ -38,6 +37,7 @@ dependencyUtilHelper.DbConnectionCtx();
 dependencyUtilHelper.IdentityAdding();
 dependencyUtilHelper.AddCors();
 dependencyUtilHelper.AddAuthentication();
+dependencyUtilHelper.ConfigureStripe();
 
 
 var app = builder.Build();
