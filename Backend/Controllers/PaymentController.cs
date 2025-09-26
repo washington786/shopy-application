@@ -24,7 +24,7 @@ namespace Backend.Controllers
             return Ok(res);
         }
 
-        [HttpPut("confirm")]
+        [HttpPost("confirm")]
         public async Task<ActionResult> ConfirmPayment(string sessionId)
         {
             var res = await service.ConfirmPayment(sessionId);
