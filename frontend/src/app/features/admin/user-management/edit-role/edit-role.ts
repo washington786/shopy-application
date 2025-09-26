@@ -1,8 +1,10 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatSelectModule } from '@angular/material/select'
+import { AdminService } from '../../../../core/services/admin-service';
+import { RolesDto } from '../../../../core/models/admin.model';
 @Component({
   selector: 'app-edit-role',
   imports: [MatFormFieldModule, MatSelectModule, ReactiveFormsModule],
@@ -14,7 +16,9 @@ export class EditRole implements OnInit {
   formBuilder = inject(FormBuilder);
   dialogRef = inject(MatDialogRef<EditRole>);
 
-  roles: string[] = ["User", "Admin", "StoreManager"];
+  service = inject(AdminService);
+
+  roles = signal<RolesDto[]>([]);;
 
   data = inject<{ roles: [] }>(MAT_DIALOG_DATA);
 
@@ -23,6 +27,19 @@ export class EditRole implements OnInit {
   ngOnInit(): void {
     this.userForm = this.formBuilder.group({
       roles: [this.data.roles || [], Validators.required]
+    });
+    this.loadRoles();
+  }
+
+  loadRoles() {
+    this.service.getRoles().subscribe({
+      next: roles => {
+        console.log(roles);
+        this.roles.set(roles);
+      },
+      error: error => {
+        console.log(error);
+      }
     });
   }
 

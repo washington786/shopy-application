@@ -5,8 +5,10 @@
     <mat-form-field class="w-full">
       <mat-label>Select roles</mat-label>
       <mat-select [multiple]="true" formControlName="roles">
-        @for (role of roles; track $index) {
-          <mat-option [value]="role">{{role}}</mat-option>
+        @if (roles(); as roles) {
+          @for (role of roles; track $index) {
+            <mat-option [value]="role.name">{{role.name}}</mat-option>
+          }
         }
       </mat-select>
     </mat-form-field>

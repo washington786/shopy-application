@@ -8,10 +8,10 @@ import { AddToCartRequest, CartItemDto, UpdateCartRequest } from '../models/cart
 
 export class CartService {
   private apiService = inject(ApiService);
-  private url = `/cart`;
+  private url = `cart`;
 
   addToCart(request: AddToCartRequest) {
-    return this.apiService.post<CartItemDto>(`${this.url}`, request);
+    return this.apiService.post<CartItemDto>(`${this.url}/add-to-cart`, request);
   }
 
   loadCartItems() {

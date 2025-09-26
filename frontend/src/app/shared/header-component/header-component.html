@@ -20,13 +20,11 @@
               <a routerLink="/admin/orders" class="text-gray-700 hover:text-indigo-600 cursor-pointer">Orders</a>
             </nav>
           }
-          @else{
-            <nav class="hid den md:flex space-x-8">
-              <a routerLink="/app/products" class="text-gray-700 hover:text-indigo-600 cursor-pointer">Products</a>
-              <a routerLink="/app/orders" class="text-gray-700 hover:text-indigo-600 cursor-pointer">Orders</a>
-            </nav>
-          }
-         }
+        }
+        <nav class="hid den md:flex space-x-8">
+          <a routerLink="/app/products" class="text-gray-700 hover:text-indigo-600 cursor-pointer">Products</a>
+          <a routerLink="/app/orders" class="text-gray-700 hover:text-indigo-600 cursor-pointer">Orders</a>
+        </nav>
       <!-- } -->
 
          <!-- Right Side -->
@@ -46,7 +44,7 @@
             @if (isAuthenticated$) {
                <button mat-button [matMenuTriggerFor]="userMenu">
             <mat-icon>account_circle</mat-icon>
-            {{ (user$)?.fullName }}
+            {{ (user$)?.fullname }}
           </button>
           <mat-menu #userMenu="matMenu">
             <button mat-menu-item (click)="goToProfile()">Profile</button>
