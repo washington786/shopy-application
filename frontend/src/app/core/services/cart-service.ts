@@ -15,7 +15,7 @@ export class CartService {
   }
 
   loadCartItems() {
-    return this.apiService.get<CartItemDto[]>(`${this.url}/my-cart-items`);
+    return this.apiService.get<CartItemDto[]>(`/${this.url}/my-cart-items`);
   }
 
   updateCartItems(id: number, request: UpdateCartRequest) {
