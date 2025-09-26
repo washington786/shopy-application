@@ -67,7 +67,7 @@
                </div>
              </div>
              <div class="mt-4 sm:mt-0 text-right">
-               <p class="text-lg font-bold text-gray-900">{{ totalPrice()|currency:"R" }}</p>
+               <p class="text-lg font-bold text-gray-900">{{ cartItemsSummary()?.totalPrice|currency:"R" }}</p>
              </div>
            </div>
          </div>
@@ -76,8 +76,8 @@
        <!-- Cart Summary -->
        <div class="bg-gray-50 px-4 py-5 sm:px-6">
          <div class="flex justify-between text-lg font-medium text-gray-900">
-           <span>Subtotal ({{ cartCount() }} items)</span>
-           <span>{{ totalPrice()|currency:"R"}}</span>
+           <span>Subtotal ({{ cartItemsSummary()?.cartCount }} items)</span>
+           <span>{{ cartItemsSummary()?.totalPrice|currency:"R"}}</span>
          </div>
          <div class="mt-2 text-sm text-gray-500">
            Shipping and taxes calculated at checkout

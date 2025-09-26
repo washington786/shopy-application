@@ -7,7 +7,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { CartService } from '../../core/services/cart-service';
 import { CartItemDto } from '../../core/models/cart.model';
 
-import { loadStripe, Stripe } from '@stripe/stripe-js';
 import { CheckoutService } from '../../core/services/checkout-service';
 
 interface CartSummaryItem {
@@ -24,7 +23,6 @@ interface CartSummary {
   total: number;
 }
 
-const stripePromise = loadStripe('');
 
 @Component({
   selector: 'app-checkout',
@@ -33,8 +31,6 @@ const stripePromise = loadStripe('');
   styleUrl: './checkout.css'
 })
 export class Checkout implements OnInit {
-  // stripe
-  private stripe: Stripe | null = null;
 
   paymentService = inject(CheckoutService);
 
@@ -92,36 +88,8 @@ export class Checkout implements OnInit {
   }
 
   async ngOnInit() {
-    this.stripe = await stripePromise;
-    this.setupStripeCard();
     this.hideForm.set(true)
     this.loadCartItems();
-  }
-
-  async setupStripeCard() {
-    if (!this.stripe) return;
-
-    const elements = this.stripe.elements();
-
-    const card = elements.create('card', {
-      style: {
-        base: {
-          fontSize: '16px',
-          color: '#424770',
-          '::placeholder': { color: '#aab7c4' }
-        }
-      }
-    });
-
-    card.mount('#card-element');
-
-    card.on('change', (event) => {
-      if (event.error) {
-        this.error.set(event.error.message || 'Invalid card');
-      } else {
-        this.error.set(null);
-      }
-    });
   }
 
   loadCartItems() {
@@ -145,9 +113,19 @@ export class Checkout implements OnInit {
   }
 
   onSubmit() {
-    if (!this.stripe) return;
     this.isLoading.set(true);
-    const sub = this.paymentService.CreatePayment().subscribe({});
+    const sub = this.paymentService.CreatePayment().subscribe({
+      next: (res) => {
+        if (!res) return;
+        this.isLoading.set(false);
+        window.location.href = res.sessionUrl;
+      },
+      error: error => {
+        console.log(error);
+        this.error.set("Failed to checkout items.");
+        this.isLoading.set(false);
+      }
+    });
     this.destroyRef.onDestroy(() => sub.unsubscribe());
   }
 

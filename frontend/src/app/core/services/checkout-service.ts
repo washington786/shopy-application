@@ -7,9 +7,13 @@ import { CheckoutSessionResponse } from '../models/checkout.model';
 })
 export class CheckoutService {
   private apiService = inject(ApiService);
-  private url = `/payment/`;
+  private url = `payment`;
 
   CreatePayment() {
     return this.apiService.post<CheckoutSessionResponse>(`${this.url}/order-payment`, {});
+  }
+
+  ConfirmPayment(sessionId: string) {
+    return this.apiService.post(`/${this.url}/confirm`, { sessionId });
   }
 }

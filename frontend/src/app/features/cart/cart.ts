@@ -31,6 +31,17 @@ export class Cart implements OnInit {
 
   snackBar = inject(MatSnackBar);
 
+  cartItemsSummary = computed(() => {
+    const items: CartItemDto[] = this.allCartItems()!;
+    if (!items || items.length === 0) return null;
+    const totalPrice = items.reduce((acc, item) => acc + (item.productPrice * item.quantity), 0)
+    const cartCount = items.reduce((count, item) => count + item.quantity, 0);
+    return {
+      totalPrice,
+      cartCount
+    }
+  })
+
   ngOnInit() {
     this.loadCartItems();
   }
@@ -39,6 +50,7 @@ export class Cart implements OnInit {
     this.isLoading.set(true);
     const sub = this.service.loadCartItems().subscribe({
       next: cartItems => {
+        console.log(cartItems);
         this.isLoading.set(false);
         this.allCartItems.set(cartItems);
       },
@@ -50,14 +62,6 @@ export class Cart implements OnInit {
 
     this.destroyRef.onDestroy(() => sub.unsubscribe());
   }
-
-  totalPrice = computed(() => {
-    return this.allCartItems()?.reduce((acc, item) => acc + (item.id * item.quantity), 0);
-  });
-
-  cartCount = computed(() => {
-    return this.allCartItems()?.reduce((count, item) => count + item.quantity, 0)
-  })
 
   updateQty = (id: number, qty: number) => computed(() => this.updateQuantity(id, Math.max(1, qty - 1)));
 
@@ -106,6 +110,7 @@ export class Cart implements OnInit {
       next: () => {
         this.isLoading.set(false);
         this.snackBar.open("Cart cleared successfully", "Ok", { duration: 4000 });
+        this.loadCartItems();
       },
       error: (error) => {
         console.log(error);
