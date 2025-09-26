@@ -4,6 +4,7 @@ using Backend.DTOs.Responses.Checkout;
 using Backend.Models;
 using Backend.Services.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Stripe;
 using Stripe.Checkout;
 
 namespace Backend.Services;
@@ -14,6 +15,50 @@ public class PaymentService(ApplicationDbContext applicationDb, IOrderService or
     private readonly ApplicationDbContext dbContext = applicationDb;
     private readonly IOrderService orderService = orderService;
     private readonly IConfiguration configuration = configuration;
+
+    public async Task<int> ConfirmPayment(string sessionId)
+    {
+        // StripeConfiguration.ApiKey = _stripeSecretKey;
+
+        var sessionService = new SessionService();
+
+        var session = await sessionService.GetAsync(sessionId);
+
+        if (session.PaymentStatus != "Paid")
+        {
+            throw new InvalidOperationException("Sorry, order not completed(paid).");
+        }
+
+        if (!session.Metadata.TryGetValue("OrderId", out string orderIdStr) || !long.TryParse(orderIdStr, out long orderId))
+        {
+            throw new KeyNotFoundException("Invalid order id");
+        }
+
+        var order = await dbContext.Orders.FindAsync(orderId);
+
+        if (order is null || order.Status != "Pending") throw new InvalidOperationException("Invalid Order");
+
+        order.UpdatedAt = DateTime.UtcNow;
+        order.Status = "Paid";
+
+        var payment = await dbContext.Payments.FirstOrDefaultAsync(p => p.SessionId == sessionId);
+
+        if (payment is not null)
+        {
+            payment.Status = "Successful";
+        }
+
+        await dbContext.SaveChangesAsync();
+
+        var cartItems = dbContext.CartItems.Where(i => i.UserId == order.UserId);
+
+        dbContext.CartItems.RemoveRange(cartItems);
+
+        await dbContext.SaveChangesAsync();
+
+        return order.Id;
+    }
+
     public async Task<CheckoutSessionResponse> CreateCheckOut(string userId)
     {
         var order = await orderService.AddOrderasync(userId, new());
