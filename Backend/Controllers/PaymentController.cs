@@ -1,3 +1,4 @@
+using Backend.DTOs.Requests.Order;
 using Backend.Models;
 using Backend.Services.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -25,8 +26,12 @@ namespace Backend.Controllers
         }
 
         [HttpPost("confirm")]
-        public async Task<ActionResult> ConfirmPayment(string sessionId)
+        public async Task<ActionResult> ConfirmPayment([FromBody] ConfirmPaymentDto confirmPaymentDto)
         {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+
+            var sessionId = confirmPaymentDto.SessionId;
+
             var res = await service.ConfirmPayment(sessionId);
             return Ok(res);
         }
