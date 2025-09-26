@@ -35,7 +35,6 @@ export class Cart implements OnInit {
     this.loadCartItems();
   }
 
-
   loadCartItems() {
     this.isLoading.set(true);
     const sub = this.service.loadCartItems().subscribe({

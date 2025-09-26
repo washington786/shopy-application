@@ -1,35 +1,82 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { FormBuilder, FormGroup, FormsModule, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { LoadingSpinner } from "../../shared/loading-spinner/loading-spinner";
-import { NgFor, NgIf } from '@angular/common';
-
+import { CurrencyPipe } from '@angular/common';
 import { MatIconModule } from '@angular/material/icon';
+import { CartService } from '../../core/services/cart-service';
+import { CartItemDto } from '../../core/models/cart.model';
+
+import { loadStripe, Stripe } from '@stripe/stripe-js';
+import { CheckoutService } from '../../core/services/checkout-service';
+
+interface CartSummaryItem {
+  name: string;
+  quantity: number;
+  price: number;
+}
+
+interface CartSummary {
+  items: CartSummaryItem[];
+  subTotal: number;
+  shipping: number;
+  tax: number;
+  total: number;
+}
+
+const stripePromise = loadStripe('');
 
 @Component({
   selector: 'app-checkout',
-  imports: [LoadingSpinner, NgFor, NgIf, FormsModule, ReactiveFormsModule, MatIconModule],
+  imports: [LoadingSpinner, FormsModule, ReactiveFormsModule, MatIconModule, CurrencyPipe],
   templateUrl: './checkout.html',
   styleUrl: './checkout.css'
 })
 export class Checkout implements OnInit {
-  cartSummary = {
-    items: [
-      { name: 'Wireless Headphones', quantity: 1, price: 99.99 },
-      { name: 'Cotton T-Shirt', quantity: 2, price: 19.99 }
-    ],
-    subtotal: 139.97,
-    shipping: 0.00,
-    tax: 12.60,
-    total: 152.57
-  };
+  // stripe
+  private stripe: Stripe | null = null;
+
+  paymentService = inject(CheckoutService);
+
+  cartItems = signal<CartItemDto[] | null>(null);
+
+  service = inject(CartService);
+  destroyRef = inject(DestroyRef);
+  router = inject(Router);
 
   // Checkout form
   checkoutForm: FormGroup;
-  isLoading = false;
+  isLoading = signal<boolean>(false);
   paymentMethod = 'card';
+  error = signal<string | null>(null);
 
-  constructor(private fb: FormBuilder, private router: Router) {
+  hideForm = signal(true);
+
+  cartSummary = computed<CartSummary | null>(() => {
+    const items = this.cartItems();
+    if (!items || items.length === 0) return null;
+
+    const summaryItems: CartSummaryItem[] = items.map(item => ({
+      name: item.productName,
+      quantity: item.quantity,
+      price: item.productPrice
+    }));
+
+    const subTotal = items.reduce((sum, item) => sum + (item.quantity * item.productPrice), 0);
+    const shipping = 5.99;
+    const tax = subTotal * 0.08;
+    const total = subTotal + shipping + tax;
+
+    return {
+      items: summaryItems,
+      subTotal,
+      shipping,
+      tax,
+      total
+    };
+  });
+
+  constructor(private fb: FormBuilder) {
     this.checkoutForm = this.fb.group({
       fullName: ['', [Validators.required, Validators.minLength(2)]],
       email: ['', [Validators.required, Validators.email]],
@@ -44,38 +91,64 @@ export class Checkout implements OnInit {
     });
   }
 
-  ngOnInit() {
-    this.isLoading = true;
-    // Simulate API delay
-    setTimeout(() => {
-      this.isLoading = false;
-    }, 800);
+  async ngOnInit() {
+    this.stripe = await stripePromise;
+    this.setupStripeCard();
+    this.hideForm.set(true)
+    this.loadCartItems();
+  }
+
+  async setupStripeCard() {
+    if (!this.stripe) return;
+
+    const elements = this.stripe.elements();
+
+    const card = elements.create('card', {
+      style: {
+        base: {
+          fontSize: '16px',
+          color: '#424770',
+          '::placeholder': { color: '#aab7c4' }
+        }
+      }
+    });
+
+    card.mount('#card-element');
+
+    card.on('change', (event) => {
+      if (event.error) {
+        this.error.set(event.error.message || 'Invalid card');
+      } else {
+        this.error.set(null);
+      }
+    });
+  }
+
+  loadCartItems() {
+    this.isLoading.set(true);
+    const sub = this.service.loadCartItems().subscribe({
+      next: cartItems => {
+        this.isLoading.set(false);
+        this.cartItems.set(cartItems);
+        if (cartItems.length === 0) {
+          this.router.navigate(['/app/products']);
+        }
+      },
+      error: error => {
+        this.isLoading.set(false);
+        this.error.set(error);
+        this.router.navigate(['/app/cart']);
+      }
+    });
+
+    this.destroyRef.onDestroy(() => sub.unsubscribe());
   }
 
   onSubmit() {
-    if (this.checkoutForm.invalid) {
-      this.markFormGroupTouched(this.checkoutForm);
-      return;
-    }
-
-    this.isLoading = true;
-    // TODO: Connect to CheckoutService later
-    console.log('Checkout form submitted', {
-      ...this.checkoutForm.value,
-      paymentMethod: this.paymentMethod,
-      cartSummary: this.cartSummary
-    });
-
-    // Simulate API delay
-    setTimeout(() => {
-      this.isLoading = false;
-      // Redirect to success page
-      this.router.navigate(['/app/checkout-success'], {
-        queryParams: { orderId: 'ORD-2024-001' }
-      });
-      // Simulate error
-      // alert('Payment failed. Please try again.');
-    }, 1500);
+    if (!this.stripe) return;
+    this.isLoading.set(true);
+    const sub = this.paymentService.CreatePayment().subscribe({});
+    this.destroyRef.onDestroy(() => sub.unsubscribe());
   }
 
   private markFormGroupTouched(formGroup: FormGroup) {
