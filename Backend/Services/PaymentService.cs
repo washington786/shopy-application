@@ -86,16 +86,16 @@ public class PaymentService(ApplicationDbContext applicationDb, IOrderService or
         // stripe checkout session
         var options = new SessionCreateOptions
         {
-            PaymentMethodTypes = ["Card"],
+            PaymentMethodTypes = new List<string> { "card" },
             LineItems = stripeItems,
             Mode = "payment",
             SuccessUrl = configuration["Stripe:SuccessUrl"] + "?session_id={CHECKOUT_SESSION_ID}&orderId=" + order.Id,
             CancelUrl = configuration["Stripe:CancelUrl"],
             Metadata = new Dictionary<string, string>
-            {
-                {"orderId",order.Id.ToString()},
-            {"userId",userId}
-            }
+    {
+        {"orderId", order.Id.ToString()},
+        {"userId", userId}
+    }
         };
 
         // create session
