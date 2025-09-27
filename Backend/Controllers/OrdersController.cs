@@ -68,6 +68,21 @@ namespace Backend.Controllers
         }
 
         [Authorize(Roles = "Admin,StoreManager")]
+        [HttpGet("admin/{orderId}")]
+        public async Task<ActionResult> GetByIdAsync(int orderId)
+        {
+            if (orderId < 0) return BadRequest(new { message = "invalid order id" });
+
+            var user = await userManager.GetUserAsync(User);
+
+            if (user is null) return Unauthorized();
+
+            var res = await service.GetOrderByAsync(user.Id, orderId);
+
+            return Ok(res);
+        }
+
+        [Authorize(Roles = "Admin,StoreManager")]
         [HttpPut("status")]
         public async Task<ActionResult> UpdateOrderStatusAsync([FromBody] UpdateOrderRequest updateOrder)
         {

@@ -12,6 +12,7 @@ public interface IOrderService
 
     // Admin
     Task<List<OrderDto>> GetAllOrdersAsync();
+    Task<OrderDto> GetOrderByIdAdminAsync(int userId);
 
     // update order
     Task<OrderDto> UpdateOrderStatusAsync(string userId, UpdateOrderRequest updateOrderRequest);

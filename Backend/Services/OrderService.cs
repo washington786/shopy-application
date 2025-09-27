@@ -80,6 +80,13 @@ public class OrderService(ICartService service, ApplicationDbContext dbContext) 
         return await BuildOrderDtoAsync(order.Id);
     }
 
+    public async Task<OrderDto> GetOrderByIdAdminAsync(int orderId)
+    {
+        var order = await context.Orders.Include(o => o.OrderItems).ThenInclude(o => o.Product).FirstOrDefaultAsync(o => o.Id == orderId);
+        if (order is null) throw new KeyNotFoundException("Order not found");
+        return await BuildOrderDtoAsync(order.Id);
+    }
+
     public async Task<List<OrderDto>> GetOrders(string userId)
     {
         var orders = await context.Orders.
