@@ -9,7 +9,7 @@
    }
 
   <!-- No Orders -->
-   @if (!isLoading && orders.length===0) {
+   @if (!isLoading() && orders()?.length===0) {
      <div class="text-center py-12">
        <mat-icon class="text-6xl text-gray-300">receipt_long</mat-icon>
        <h3 class="mt-4 text-xl font-medium text-gray-900">No orders yet</h3>
@@ -25,7 +25,7 @@
    }
 
   <!-- Orders List -->
-   @if (!isLoading && orders.length>0) {
+   @if (!isLoading() && orders()?.length) {
 
      <div>
        <!-- Status Filter -->

@@ -5,7 +5,6 @@ import { MatIconModule } from '@angular/material/icon'
 import { DatePipe } from '@angular/common';
 import { OrderService } from '../../../core/services/order-service';
 import { OrderDto } from '../../../core/models/order.model';
-import { finalize } from 'rxjs';
 
 @Component({
   selector: 'app-order-list',
@@ -16,7 +15,7 @@ import { finalize } from 'rxjs';
 export class OrderList implements OnInit {
   service = inject(OrderService);
   destroyRef = inject(DestroyRef);
-  orders: OrderDto[] = [];
+  orders = signal<OrderDto[] | null>(null);
 
   router = inject(Router);
   // UI State
@@ -32,10 +31,8 @@ export class OrderList implements OnInit {
     this.isLoading.set(true);
     let sub = this.service.getAllOrders().subscribe({
       next: response => {
-        this.orders = response;
+        this.orders.set(response);
         this.isLoading.set(false);
-        console.log('orders:\n', response);
-
       },
       error: error => {
         this.error = error;
@@ -46,9 +43,11 @@ export class OrderList implements OnInit {
   }
 
   get filteredOrders() {
+    const items = this.orders();
+    if (!items || items.length === 0) return [];
     return this.selectedStatus ?
-      this.orders.filter(order => order.status === this.selectedStatus) :
-      this.orders;
+      items.filter(order => order.status === this.selectedStatus) :
+      items;
   }
 
   viewOrder(id: number) {
