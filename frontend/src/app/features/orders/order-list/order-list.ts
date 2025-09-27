@@ -2,13 +2,13 @@ import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoadingSpinner } from "../../../shared/loading-spinner/loading-spinner";
 import { MatIconModule } from '@angular/material/icon'
-import { DatePipe } from '@angular/common';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import { OrderService } from '../../../core/services/order-service';
 import { OrderDto } from '../../../core/models/order.model';
 
 @Component({
   selector: 'app-order-list',
-  imports: [LoadingSpinner, MatIconModule, DatePipe],
+  imports: [LoadingSpinner, MatIconModule, DatePipe, CurrencyPipe],
   templateUrl: './order-list.html',
   styleUrl: './order-list.css'
 })

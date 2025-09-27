@@ -1,81 +1,44 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingSpinner } from "../../../shared/loading-spinner/loading-spinner";
-import { DatePipe, NgFor, NgIf } from '@angular/common';
+import { CurrencyPipe, DatePipe } from '@angular/common';
+import { OrderDto } from '../../../core/models/order.model';
+import { OrderService } from '../../../core/services/order-service';
 
 @Component({
   selector: 'app-order-detail',
-  imports: [LoadingSpinner, NgFor, NgIf, DatePipe],
+  imports: [LoadingSpinner, DatePipe, CurrencyPipe],
   templateUrl: './order-detail.html',
   styleUrl: './order-detail.css'
 })
 export class OrderDetail implements OnInit {
-  order = {
-    id: 1,
-    orderNumber: 'ORD-2024-001',
-    totalAmount: 259.97,
-    status: 'Delivered',
-    orderDate: '2024-06-15T10:30:00Z',
-    items: [
-      {
-        productId: 1,
-        productName: 'Wireless Headphones',
-        productImageUrl: '/assets/images/headphones.jpg',
-        quantity: 1,
-        unitPrice: 99.99,
-        totalPrice: 99.99
-      },
-      {
-        productId: 3,
-        productName: 'Cotton T-Shirt',
-        productImageUrl: '/assets/images/tshirt.jpg',
-        quantity: 3,
-        unitPrice: 19.99,
-        totalPrice: 59.97
-      },
-      {
-        productId: 4,
-        productName: 'Coffee Maker',
-        productImageUrl: '/assets/images/coffee-maker.jpg',
-        quantity: 1,
-        unitPrice: 99.99,
-        totalPrice: 99.99
-      }
-    ],
-    shippingAddress: {
-      fullName: 'John Doe',
-      addressLine1: '123 Main Street',
-      addressLine2: 'Apt 4B',
-      city: 'New York',
-      state: 'NY',
-      postalCode: '10001',
-      country: 'USA',
-      phone: '+1 (555) 123-4567'
-    },
-    payment: {
-      provider: 'Stripe',
-      status: 'Succeeded',
-      transactionId: 'txn_123456789',
-      amount: 259.97
-    }
-  };
+  // service
+  service = inject(OrderService);
+  dsRef = inject(DestroyRef);
+
+  order = signal<OrderDto | null>(null)
 
   // UI State
-  isLoading = false;
+  isLoading = signal<boolean>(false);
   route = inject(ActivatedRoute);
   router = inject(Router);
 
   ngOnInit() {
     const id = this.route.snapshot.paramMap.get('id');
-    // In real app, we'd load order by ID
-    // For now, we use mock data
-    console.log('Loading order with ID:', id);
+    this.loadOrder(parseInt(id!));
+  }
 
-    this.isLoading = true;
-    // Simulate API delay
-    setTimeout(() => {
-      this.isLoading = false;
-    }, 800);
+  loadOrder(id: number) {
+    const sub = this.service.getOrderById(id).subscribe({
+      next: order => {
+        this.order.set(order);
+        this.isLoading.set(false)
+      },
+      error: error => {
+        this.isLoading.set(false);
+      }
+    });
+    this.dsRef.onDestroy(() => sub.unsubscribe());
   }
 
   goToOrders() {

@@ -86,7 +86,7 @@
               <div class="mt-4">
                 <div class="flex justify-between items-center">
                   <span class="text-gray-600">Items: {{ order.items.length }}</span>
-                  <span class="text-xl font-bold text-gray-900">${{ order.totalAmount }}</span>
+                  <span class="text-xl font-bold text-gray-900">{{ order.totalAmount |currency:"R"}}</span>
                 </div>
               </div>
 
@@ -98,7 +98,7 @@
                         <div class="flex-shrink-0 h-10 w-10 bg-gray-200 rounded-md"></div>
                         <div class="ml-3">
                           <p class="text-sm font-medium text-gray-900">{{ item.productName }}</p>
-                          <p class="text-sm text-gray-500">{{ item.quantity }} x ${{ item.unitPrice }}</p>
+                          <p class="text-sm text-gray-500">{{ item.quantity }} x {{ item.unitPrice |currency:"R"}}</p>
                         </div>
                       </div>
                     </div>
