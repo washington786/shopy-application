@@ -26,23 +26,65 @@ public class PaymentService(ApplicationDbContext applicationDb, IOrderService or
 
         Console.WriteLine($"SessionId: {sessionId}, PaymentStatus: {session.PaymentStatus}");
 
-        if (session.PaymentStatus?.ToLower() != "paid")
+        using var transaction = await dbContext.Database.BeginTransactionAsync();
+
+        try
         {
-            return -1;
+
+            if (session.PaymentStatus?.ToLower() != "paid")
+            {
+                return -1;
+            }
+
+            if (string.IsNullOrEmpty(session.ClientReferenceId))
+            {
+                throw new InvalidOperationException("user id not found in payment session");
+            }
+
+            var ttAmount = (decimal)session.AmountTotal / 100;
+
+            // If paid, create the order in DB
+            var order = new Order
+            {
+                UserId = session.ClientReferenceId,
+                TotalAmount = ttAmount,
+                Status = "Paid",
+                OrderDate = DateTime.UtcNow,
+                UpdatedAt = DateTime.UtcNow,
+                UpdatedBy = "Stripe Payment",
+
+            };
+
+            await dbContext.Orders.AddAsync(order);
+            await dbContext.SaveChangesAsync();
+
+            // payment
+            var payment = new Payment
+            {
+                Amount = ttAmount,
+                CreatedAt = DateTime.UtcNow,
+                OrderId = order.Id,
+                Provider = "Stripe",
+                SessionId = session.Id,
+                TransactionId = session.PaymentIntentId,
+                Status = "Completed"
+            };
+
+            await dbContext.Payments.AddAsync(payment);
+            await dbContext.SaveChangesAsync();
+
+            order.PaymentId = payment.Id;
+
+            await dbContext.SaveChangesAsync();
+
+            await transaction.CommitAsync();
+            return order.Id;
         }
-
-        // If paid, create the order in DB
-        var order = new Order
+        catch
         {
-            UserId = session.ClientReferenceId,
-            TotalAmount = (int)session.AmountTotal!,
-            Status = "Paid"
-        };
-
-        await dbContext.Orders.AddAsync(order);
-        await dbContext.SaveChangesAsync();
-
-        return order.Id;
+            await transaction.RollbackAsync();
+            throw;
+        }
     }
 
 
@@ -78,6 +120,7 @@ public class PaymentService(ApplicationDbContext applicationDb, IOrderService or
             Mode = "payment",
             SuccessUrl = configuration["Stripe:SuccessUrl"] + "?session_id={CHECKOUT_SESSION_ID}&orderId=" + order.Id,
             CancelUrl = configuration["Stripe:CancelUrl"],
+            ClientReferenceId = userId,
             Metadata = new Dictionary<string, string>
     {
         {"orderId", order.Id.ToString()},
