@@ -73,7 +73,7 @@ public class OrderService(ICartService service, ApplicationDbContext dbContext) 
 
         var orderDtos = new List<OrderDto>();
 
-        foreach (var orderItem in orderDtos)
+        foreach (var orderItem in orders)
         {
             var item = await BuildOrderDtoAsync(orderItem.Id);
             orderDtos.Add(item);
