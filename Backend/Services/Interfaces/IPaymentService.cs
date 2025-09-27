@@ -7,5 +7,5 @@ public interface IPaymentService
 {
 
     Task<CheckoutSessionResponse> CreateCheckOut(string userId);
-    Task<int> ConfirmPayment(string sessionId);
+    Task<int> ConfirmPayment(string sessionId, string UserId);
 }

@@ -16,7 +16,7 @@ public class PaymentService(ApplicationDbContext applicationDb, IOrderService or
     private readonly IOrderService orderService = orderService;
     private readonly IConfiguration configuration = configuration;
 
-    public async Task<int> ConfirmPayment(string sessionId)
+    public async Task<int> ConfirmPayment(string sessionId, string UserId)
     {
         var service = new SessionService();
         var session = await service.GetAsync(sessionId);
@@ -36,49 +36,73 @@ public class PaymentService(ApplicationDbContext applicationDb, IOrderService or
                 return -1;
             }
 
-            if (string.IsNullOrEmpty(session.ClientReferenceId))
+            var ttAmount = ((decimal)session.AmountTotal!) / 100;
+
+            if (!session.Metadata.ContainsKey("orderId") == true || !int.TryParse(session.Metadata["orderId"], out int existingOrderId))
             {
-                throw new InvalidOperationException("user id not found in payment session");
+                throw new InvalidOperationException("order id invalid");
             }
 
-            var ttAmount = (decimal)session.AmountTotal / 100;
+            var existingOrder = await dbContext.Orders.Include(o => o.OrderItems).FirstOrDefaultAsync(e => e.Id == existingOrderId);
+
+            if (existingOrder is null) throw new KeyNotFoundException($"Order with Id {existingOrderId} not found");
 
             // If paid, create the order in DB
-            var order = new Order
-            {
-                UserId = session.ClientReferenceId,
-                TotalAmount = ttAmount,
-                Status = "Paid",
-                OrderDate = DateTime.UtcNow,
-                UpdatedAt = DateTime.UtcNow,
-                UpdatedBy = "Stripe Payment",
+            // var order = new Order
+            // {
+            //     UserId = UserId,
+            //     TotalAmount = ttAmount,
+            //     Status = "Paid",
+            //     OrderDate = DateTime.UtcNow,
+            //     UpdatedAt = DateTime.UtcNow,
+            //     UpdatedBy = "Stripe Payment",
 
-            };
+            // };
 
-            await dbContext.Orders.AddAsync(order);
-            await dbContext.SaveChangesAsync();
+            existingOrder.Status = "Paid";
+            existingOrder.UpdatedAt = DateTime.UtcNow;
+            existingOrder.UpdatedBy = "Stripe Payment";
+
+            // await dbContext.Orders.AddAsync(order);
+            // await dbContext.SaveChangesAsync();
+
+            var existingPayment = await dbContext.Payments.FirstOrDefaultAsync(p => p.SessionId == session.Id);
 
             // payment
-            var payment = new Payment
+            if (existingPayment is null)
             {
-                Amount = ttAmount,
-                CreatedAt = DateTime.UtcNow,
-                OrderId = order.Id,
-                Provider = "Stripe",
-                SessionId = session.Id,
-                TransactionId = session.PaymentIntentId,
-                Status = "Completed"
-            };
+                var payment = new Payment
+                {
+                    Amount = ttAmount,
+                    CreatedAt = DateTime.UtcNow,
+                    OrderId = existingOrder.Id,
+                    Provider = "Stripe",
+                    SessionId = session.Id,
+                    TransactionId = session.PaymentIntentId,
+                    Status = "Completed"
+                };
+                await dbContext.Payments.AddAsync(payment);
 
-            await dbContext.Payments.AddAsync(payment);
+                existingOrder.PaymentId = payment.Id;
+            }
+            else
+            {
+                existingPayment.Status = "Completed";
+                existingPayment.Amount = ttAmount;
+                existingPayment.TransactionId = session.PaymentIntentId;
+                existingOrder.PaymentId = existingPayment.Id;
+            }
+
             await dbContext.SaveChangesAsync();
 
-            order.PaymentId = payment.Id;
+
+            Console.WriteLine($"Order {existingOrder.Id} updated to Paid status with {existingOrder.OrderItems?.Count ?? 0} items");
 
             await dbContext.SaveChangesAsync();
 
             await transaction.CommitAsync();
-            return order.Id;
+
+            return existingOrder.Id;
         }
         catch
         {
@@ -122,10 +146,10 @@ public class PaymentService(ApplicationDbContext applicationDb, IOrderService or
             CancelUrl = configuration["Stripe:CancelUrl"],
             ClientReferenceId = userId,
             Metadata = new Dictionary<string, string>
-    {
-        {"orderId", order.Id.ToString()},
-        {"userId", userId}
-    }
+            {
+                {"orderId", order.Id.ToString()},
+                {"userId", userId}
+            }
         };
 
         // create session

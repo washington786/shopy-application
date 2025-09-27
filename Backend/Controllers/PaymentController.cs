@@ -30,8 +30,12 @@ namespace Backend.Controllers
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
+            var user = await _usermanager.GetUserAsync(User);
+
+            if (user is null) return Unauthorized();
+
             var sessionId = confirmPaymentDto.SessionId;
-            var orderId = await service.ConfirmPayment(sessionId);
+            var orderId = await service.ConfirmPayment(sessionId, user.Id);
 
             if (orderId == -1)
                 return BadRequest(new { message = "Payment not completed yet." });
