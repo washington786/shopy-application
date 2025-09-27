@@ -59,6 +59,20 @@ public class OrderService(ICartService service, ApplicationDbContext dbContext) 
         return await BuildOrderDtoAsync(order.Id);
     }
 
+    public async Task<List<OrderDto>> GetAllOrdersAsync()
+    {
+        var orders = await context.Orders.OrderByDescending(o => o.OrderDate).ToListAsync();
+
+        var orderDtos = new List<OrderDto>();
+
+        foreach (var orderItem in orders)
+        {
+            var item = await BuildOrderDtoAsync(orderItem.Id);
+            orderDtos.Add(item);
+        }
+        return orderDtos;
+    }
+
     public async Task<OrderDto> GetOrderByAsync(string userId, int orderId)
     {
         var order = await context.Orders.Include(o => o.OrderItems).ThenInclude(o => o.Product).FirstOrDefaultAsync(o => o.Id == orderId && o.UserId == userId);

@@ -41,6 +41,18 @@ namespace Backend.Controllers
             return Ok(res);
         }
 
+        [HttpGet("admin-all-orders")]
+        public async Task<ActionResult> GetAllAdminOrderAsync()
+        {
+            var user = await userManager.GetUserAsync(User);
+
+            if (user is null) return Unauthorized();
+
+            var res = await service.GetAllOrdersAsync();
+
+            return Ok(res);
+        }
+
         [HttpGet("{orderId}")]
         public async Task<ActionResult> GetAsync(int orderId)
         {
