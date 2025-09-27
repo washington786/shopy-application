@@ -77,7 +77,7 @@ namespace Backend.Controllers
 
             if (user is null) return Unauthorized();
 
-            var res = await service.GetOrderByAsync(user.Id, orderId);
+            var res = await service.GetOrderByIdAdminAsync(orderId);
 
             return Ok(res);
         }
