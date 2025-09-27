@@ -56,6 +56,10 @@ export const routes: Routes = [
         loadComponent: () => import("./features/checkout/checkout-success/checkout-success").then(res => res.CheckoutSuccess)
       },
       {
+        path: 'success',
+        redirectTo: "checkout-success"
+      },
+      {
         path: 'profile',
         loadComponent: () => import("./features/auth/profile/profile").then(res => res.Profile),
       },

@@ -1,4 +1,4 @@
-import { Component, DestroyRef, inject, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { Router } from '@angular/router';
 import { LoadingSpinner } from "../../../shared/loading-spinner/loading-spinner";
 import { MatIconModule } from '@angular/material/icon'
@@ -20,22 +20,26 @@ export class OrderList implements OnInit {
 
   router = inject(Router);
   // UI State
-  isLoading = false;
+  isLoading = signal<boolean>(false);
   selectedStatus: string | null = null;
   error: string | null = null;
 
   ngOnInit() {
-    // this.isLoading = true;
-    let sub = this.service.getAllOrders().pipe(finalize(() => this.isLoading = false)).subscribe({
+    this.loadOrders();
+  }
+
+  loadOrders() {
+    this.isLoading.set(true);
+    let sub = this.service.getAllOrders().subscribe({
       next: response => {
         this.orders = response;
-        this.isLoading = false;
+        this.isLoading.set(false);
         console.log('orders:\n', response);
 
       },
       error: error => {
         this.error = error;
-        this.isLoading = false;
+        this.isLoading.set(false);
       }
     });
     this.destroyRef.onDestroy(() => sub.unsubscribe());

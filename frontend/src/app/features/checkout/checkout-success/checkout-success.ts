@@ -1,8 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingSpinner } from "../../../shared/loading-spinner/loading-spinner";
 import { MatIconModule } from '@angular/material/icon'
 import { DatePipe, NgFor, NgIf } from '@angular/common';
+import { CheckoutService } from '../../../core/services/checkout-service';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { retry, take } from 'rxjs';
 @Component({
   selector: 'app-checkout-success',
   imports: [LoadingSpinner, MatIconModule, DatePipe, NgFor, NgIf],
@@ -11,18 +14,41 @@ import { DatePipe, NgFor, NgIf } from '@angular/common';
 })
 export class CheckoutSuccess implements OnInit {
   orderId: string | null = null;
-  isLoading = false;
+  sessionId: string | null = null;
+  isLoading = signal<boolean>(false);
+  service = inject(CheckoutService);
+  snackBar = inject(MatSnackBar);
+
+  destroyRef = inject(DestroyRef);
 
   constructor(private route: ActivatedRoute, private router: Router) { }
 
   ngOnInit() {
-    this.isLoading = true;
+    this.isLoading.set(true);
     this.orderId = this.route.snapshot.queryParamMap.get('orderId');
+    this.sessionId = this.route.snapshot.queryParamMap.get('session_id');
 
-    // Simulate API delay
-    setTimeout(() => {
-      this.isLoading = false;
-    }, 800);
+    if ((!this.sessionId)) return;
+
+    console.log(this.sessionId);
+
+
+    const sub = this.service.ConfirmPayment(this.sessionId).pipe(retry(4)).subscribe({
+      next: res => {
+        console.log('response of order: ', res);
+
+        this.isLoading.set(false);
+        this.snackBar.open("Order created successfully", "Ok", { duration: 4000 })
+      },
+      error: error => {
+        console.log('Error in order: ', error);
+        this.snackBar.open("Failed payment.", "Ok", { duration: 4000 });
+        this.isLoading.set(false);
+      }
+    });
+
+    this.destroyRef.onDestroy(() => sub.unsubscribe());
+
   }
 
   goToOrders() {

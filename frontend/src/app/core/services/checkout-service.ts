@@ -14,6 +14,7 @@ export class CheckoutService {
   }
 
   ConfirmPayment(sessionId: string) {
-    return this.apiService.post(`/${this.url}/confirm`, { sessionId });
+    const body = { SessionId: sessionId };
+    return this.apiService.post(`${this.url}/confirm`, body);
   }
 }

@@ -2,7 +2,7 @@
   <h1 class="text-3xl font-bold mb-8">My Orders</h1>
 
   <!-- Loading State -->
-   @if (isLoading) {
+   @if (isLoading()) {
      <div class="flex justify-center py-12">
        <app-loading-spinner></app-loading-spinner>
      </div>

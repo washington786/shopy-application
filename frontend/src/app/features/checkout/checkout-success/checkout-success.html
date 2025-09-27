@@ -1,79 +1,84 @@
 <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
   <!-- Loading State -->
-  <div *ngIf="isLoading" class="flex justify-center py-12">
-    <app-loading-spinner></app-loading-spinner>
-  </div>
+
+  @if (isLoading()) {
+    <div class="flex justify-center py-12">
+      <app-loading-spinner></app-loading-spinner>
+    </div>
+  }
 
   <!-- Success Message -->
-  <div *ngIf="!isLoading" class="bg-white rounded-lg shadow overflow-hidden">
-    <div class="bg-green-50 px-4 py-5 sm:px-6">
-      <div class="flex items-center">
-        <div class="flex-shrink-0">
-          <mat-icon class="h-6 w-6 text-green-400">check_circle</mat-icon>
-        </div>
-        <div class="ml-3">
-          <h3 class="text-lg leading-6 font-medium text-green-800">Order Placed Successfully!</h3>
-        </div>
-      </div>
-    </div>
+   @if (!isLoading()) {
+     <div class="bg-white rounded-lg shadow overflow-hidden">
+       <div class="bg-green-50 px-4 py-5 sm:px-6">
+         <div class="flex items-center">
+           <div class="flex-shrink-0">
+             <mat-icon class="h-6 w-6 text-green-400">check_circle</mat-icon>
+           </div>
+           <div class="ml-3">
+             <h3 class="text-lg leading-6 font-medium text-green-800">Order Placed Successfully!</h3>
+           </div>
+         </div>
+       </div>
 
-    <div class="px-4 py-5 sm:px-6">
-      <div class="text-center">
-        <mat-icon class="text-6xl text-green-400">celebration</mat-icon>
-        <h1 class="mt-4 text-3xl font-bold text-gray-900">Thank You for Your Order!</h1>
-        <p class="mt-2 text-lg text-gray-500">Your order has been confirmed and is being processed.</p>
-      </div>
+       <div class="px-4 py-5 sm:px-6">
+         <div class="text-center">
+           <mat-icon class="text-6xl text-green-400">celebration</mat-icon>
+           <h1 class="mt-4 text-3xl font-bold text-gray-900">Thank You for Your Order!</h1>
+           <p class="mt-2 text-lg text-gray-500">Your order has been confirmed and is being processed.</p>
+         </div>
 
-      <div class="mt-8 bg-gray-50 rounded-lg p-6">
-        <h3 class="text-lg font-medium text-gray-900 mb-4">Order Details</h3>
-        <div class="space-y-4">
-          <div class="flex justify-between">
-            <span class="text-gray-600">Order Number</span>
-            <span class="text-gray-900 font-medium">{{ orderId || 'ORD-2024-001' }}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-600">Order Date</span>
-            <span class="text-gray-900 font-medium">{{ today | date:'medium' }}</span>
-          </div>
-          <div class="flex justify-between">
-            <span class="text-gray-600">Estimated Delivery</span>
-            <span class="text-gray-900 font-medium">{{ deliveryDate | date:'medium' }}</span>
-          </div>
-        </div>
-      </div>
+         <div class="mt-8 bg-gray-50 rounded-lg p-6">
+           <h3 class="text-lg font-medium text-gray-900 mb-4">Order Details</h3>
+           <div class="space-y-4">
+             <div class="flex justify-between">
+               <span class="text-gray-600">Order Number</span>
+               <span class="text-gray-900 font-medium">{{ orderId || 'ORD-2024-001' }}</span>
+             </div>
+             <div class="flex justify-between">
+               <span class="text-gray-600">Order Date</span>
+               <span class="text-gray-900 font-medium">{{ today | date:'medium' }}</span>
+             </div>
+             <div class="flex justify-between">
+               <span class="text-gray-600">Estimated Delivery</span>
+               <span class="text-gray-900 font-medium">{{ deliveryDate | date:'medium' }}</span>
+             </div>
+           </div>
+         </div>
 
-      <div class="mt-8">
-        <h3 class="text-lg font-medium text-gray-900 mb-4">What's Next?</h3>
-        <ul class="space-y-3">
-          <li class="flex">
-            <mat-icon class="h-5 w-5 text-green-400 mr-3">check</mat-icon>
-            <span class="text-gray-600">You'll receive an email confirmation shortly</span>
-          </li>
-          <li class="flex">
-            <mat-icon class="h-5 w-5 text-green-400 mr-3">check</mat-icon>
-            <span class="text-gray-600">Track your order status in your account</span>
-          </li>
-          <li class="flex">
-            <mat-icon class="h-5 w-5 text-green-400 mr-3">check</mat-icon>
-            <span class="text-gray-600">Contact us if you have any questions</span>
-          </li>
-        </ul>
-      </div>
+         <div class="mt-8">
+           <h3 class="text-lg font-medium text-gray-900 mb-4">What's Next?</h3>
+           <ul class="space-y-3">
+             <li class="flex">
+               <mat-icon class="h-5 w-5 text-green-400 mr-3">check</mat-icon>
+               <span class="text-gray-600">You'll receive an email confirmation shortly</span>
+             </li>
+             <li class="flex">
+               <mat-icon class="h-5 w-5 text-green-400 mr-3">check</mat-icon>
+               <span class="text-gray-600">Track your order status in your account</span>
+             </li>
+             <li class="flex">
+               <mat-icon class="h-5 w-5 text-green-400 mr-3">check</mat-icon>
+               <span class="text-gray-600">Contact us if you have any questions</span>
+             </li>
+           </ul>
+         </div>
 
-      <div class="mt-8 flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
-        <button
-          (click)="goToOrders()"
-          class="px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
-          View Order Details
-        </button>
-        <button
-          (click)="continueShopping()"
-          class="px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-        >
-          Continue Shopping
-        </button>
-      </div>
-    </div>
-  </div>
+         <div class="mt-8 flex flex-col sm:flex-row justify-center space-y-4 sm:space-y-0 sm:space-x-4">
+           <button
+             (click)="goToOrders()"
+             class="px-6 py-3 border border-transparent text-base font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+           >
+             View Order Details
+           </button>
+           <button
+             (click)="continueShopping()"
+             class="px-6 py-3 border border-gray-300 text-base font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+           >
+             Continue Shopping
+           </button>
+         </div>
+       </div>
+     </div>
+   }
 </div>
