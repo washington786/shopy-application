@@ -7,18 +7,26 @@ import { CreateOrderRequest, OrderDto, UpdateOrderStatus } from '../models/order
 })
 export class OrderService {
   private apiService = inject(ApiService);
-  private url = `/orders`;
+  private url = `orders`;
 
   createOrder(request: CreateOrderRequest) {
-    return this.apiService.post<OrderDto>(`${this.url}/create-order`, request);
+    return this.apiService.post<OrderDto>(`/${this.url}/create-order`, request);
   }
 
   getAllOrders() {
-    return this.apiService.get<OrderDto[]>(`${this.url}/all-orders`)
+    return this.apiService.get<OrderDto[]>(`/${this.url}/all-orders`)
+  }
+
+  getAdminAllOrders() {
+    return this.apiService.get<OrderDto[]>(`/${this.url}/admin-all-orders`)
   }
 
   getOrderById(id: number) {
-    return this.apiService.get<OrderDto>(`${this.url}/${id}`);
+    return this.apiService.get<OrderDto>(`/${this.url}/${id}`);
+  }
+
+  getAdminOrderById(id: number) {
+    return this.apiService.get<OrderDto>(`/${this.url}/admin/${id}`);
   }
 
   updateOrderStatus(request: UpdateOrderStatus) {

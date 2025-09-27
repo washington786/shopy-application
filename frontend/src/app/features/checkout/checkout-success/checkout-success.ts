@@ -2,13 +2,13 @@ import { Component, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { LoadingSpinner } from "../../../shared/loading-spinner/loading-spinner";
 import { MatIconModule } from '@angular/material/icon'
-import { DatePipe, NgFor, NgIf } from '@angular/common';
+import { DatePipe } from '@angular/common';
 import { CheckoutService } from '../../../core/services/checkout-service';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { retry, take } from 'rxjs';
+import { retry } from 'rxjs';
 @Component({
   selector: 'app-checkout-success',
-  imports: [LoadingSpinner, MatIconModule, DatePipe, NgFor, NgIf],
+  imports: [LoadingSpinner, MatIconModule, DatePipe],
   templateUrl: './checkout-success.html',
   styleUrl: './checkout-success.css'
 })

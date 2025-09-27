@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, inject, OnInit } from '@angular/core';
+import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon'
 import { CartBadgeComponent } from "../cart-badge-component/cart-badge-component";
@@ -18,14 +18,39 @@ export class HeaderComponent implements OnInit {
   // store = inject(Store);
   router = inject(Router);
   service = inject(AuthService);
-  user$: UserDto | null = null;
-  isAuthenticated$: boolean = false;
+  user = signal<UserDto | null>(null);
+  isAuthenticated$ = signal<boolean>(false);
   destroyRef = inject(DestroyRef);
   // cartCount$ = this.store.select(selectCartCount);
   // user$ = this.store.select(selectAuthUser);
 
-  adminRoute = computed(() => this.user$?.roles.includes("Admin") && this.user$.roles.includes("StoreManager"));
-  userRoute = computed(() => this.user$?.roles.includes("User"));
+  hasAdminRole = computed(() => {
+    const user = this.user();
+    return user?.roles?.some(role =>
+      role === "Admin" || role === "StoreManager"
+    ) ?? false;
+  });
+
+  hasUserRole = computed(() => {
+    const user = this.user();
+    return user?.roles?.includes("User") ?? false;
+  });
+
+  // Determine which route to use based on primary role
+  isAdminRoute = computed(() => {
+    return this.hasAdminRole() && !this.hasUserRole();
+  });
+
+  isUserRoute = computed(() => {
+    return this.hasUserRole() && !this.hasAdminRole();
+  });
+
+  // For users with both roles, you might want to prioritize one
+  primaryRoute = computed(() => {
+    if (this.hasAdminRole()) return '/admin/products';
+    if (this.hasUserRole()) return '/app/products';
+    return '/auth/login';
+  });
 
   logout() {
     this.service.logout();
@@ -43,11 +68,22 @@ export class HeaderComponent implements OnInit {
     this.router.navigate(["/auth/login"]);
   }
 
+  goToAdminProfile() {
+    this.router.navigate(['/admin/products'])
+  }
+
   ngOnInit(): void {
+    this.loadUserProfile();
+  }
+
+  loadUserProfile() {
     let sub = this.service.getUserProfile().subscribe({
       next: res => {
-        this.user$ = res;
-        this.isAuthenticated$ = true;
+        this.user.set(res);
+        this.isAuthenticated$.set(true);
+      }, error: error => {
+        console.log('Header: ', error)
+        this.isAuthenticated$.set(false);
       }
     });
     this.destroyRef.onDestroy(() => sub.unsubscribe());

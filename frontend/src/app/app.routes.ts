@@ -74,6 +74,7 @@ export const routes: Routes = [
       { path: "products", loadComponent: () => import('./features/admin/product-management/product-management').then(res => res.ProductManagement) },
       { path: "users", loadComponent: () => import("./features/admin/user-management/user-management").then(res => res.UserManagement) },
       { path: "categories", loadComponent: () => import("./features/admin/categories-management/categories-management").then(res => res.CategoriesManagement) },
+      { path: "orders", loadComponent: () => import('./features/admin/order-management/order-management').then(res => res.OrderManagement) },
     ],
   },
   {

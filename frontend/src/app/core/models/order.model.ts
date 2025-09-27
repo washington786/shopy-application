@@ -24,6 +24,6 @@ export interface CreateOrderRequest {
 export interface UpdateOrderStatus {
   status: string,
   orderId: number,
-  updatedBy: number,
+  updatedBy: string,
   notes?: string
 }

@@ -3,56 +3,68 @@
     <div class="flex justify-between items-center h-16">
       <!-- Logo -->
       <div class="flex-shrink-0">
-        @if (isAuthenticated$ && userRoute()) {
-          <a [routerLink]="isAuthenticated$ ?'/app/products':'/auth/login'" class="text-2xl font-bold text-indigo-600">Shopy</a>
-        }@else if (isAuthenticated$ && adminRoute()) {}
-        <a [routerLink]="isAuthenticated$ ?'/admin/products':'/auth/login'" class="text-2xl font-bold text-indigo-600">Shopy</a>
+        @if (isAuthenticated$()) {
+          @if (isAdminRoute()) {
+            <a routerLink="/admin/products" class="text-2xl font-bold text-indigo-600">Shopy</a>
+          } @else if (isUserRoute()) {
+            <a routerLink="/app/products" class="text-2xl font-bold text-indigo-600">Shopy</a>
+          }
+        } @else {
+          <a routerLink="/auth/login" class="text-2xl font-bold text-indigo-600">Shopy</a>
+        }
       </div>
 
       <!-- Nav Links -->
-      @if (isAuthenticated$ && user$) {
-         <!-- @for (role of user$?.roles; track $index) { -->
-          @if(user$.roles && user$.roles.includes("Admin") || user$.roles.includes("StoreManager")){
-            <nav class="hid den md:flex space-x-8">
-              <a routerLink="/admin/products" class="text-gray-700 hover:text-indigo-600 cursor-pointer">Products</a>
-              <a routerLink="/admin/categories" class="text-gray-700 hover:text-indigo-600 cursor-pointer">Categories</a>
-              <a routerLink="/admin/users" class="text-gray-700 hover:text-indigo-600 cursor-pointer">Users</a>
-              <a routerLink="/admin/orders" class="text-gray-700 hover:text-indigo-600 cursor-pointer">Orders</a>
-            </nav>
-          }
+       @if (isAuthenticated$() && user()) {
+        <!-- Show admin nav if user has Admin or StoreManager role -->
+        @if (hasAdminRole()) {
+          <nav class="hidden md:flex space-x-8">
+            <a routerLink="/admin/products" class="text-gray-700 hover:text-indigo-600 cursor-pointer">Products</a>
+            <a routerLink="/admin/categories" class="text-gray-700 hover:text-indigo-600 cursor-pointer">Categories</a>
+            <a routerLink="/admin/users" class="text-gray-700 hover:text-indigo-600 cursor-pointer">Users</a>
+            <a routerLink="/admin/orders" class="text-gray-700 hover:text-indigo-600 cursor-pointer">Orders</a>
+          </nav>
         }
-        <nav class="hid den md:flex space-x-8">
-          <a routerLink="/app/products" class="text-gray-700 hover:text-indigo-600 cursor-pointer">Products</a>
-          <a routerLink="/app/orders" class="text-gray-700 hover:text-indigo-600 cursor-pointer">Orders</a>
-        </nav>
-      <!-- } -->
-
+        @if (hasUserRole()) {
+          <nav class="hidden md:flex space-x-8">
+            <a routerLink="/app/products" class="text-gray-700 hover:text-indigo-600 cursor-pointer">Products</a>
+            <a routerLink="/app/orders" class="text-gray-700 hover:text-indigo-600 cursor-pointer">Orders</a>
+          </nav>
+        }
+      }
          <!-- Right Side -->
          <div class="flex items-center space-x-4">
            <!-- Cart -->
-           <button
-             mat-icon-button
-             class="relative"
-             (click)="goToCart()"
-           >
-             <mat-icon>shopping_cart</mat-icon>
-             <app-cart-badge-component></app-cart-badge-component>
-           </button>
+              @if (isAuthenticated$() && hasUserRole()) {
+          <button
+            mat-icon-button
+            class="relative"
+            (click)="goToCart()"
+          >
+            <mat-icon>shopping_cart</mat-icon>
+            <app-cart-badge-component></app-cart-badge-component>
+          </button>
+        }
            <!-- [disabled]="!(cartCount$)" -->
 
            <!-- User Menu -->
-            @if (isAuthenticated$) {
-               <button mat-button [matMenuTriggerFor]="userMenu">
+           @if (isAuthenticated$()) {
+          <button mat-button [matMenuTriggerFor]="userMenu">
             <mat-icon>account_circle</mat-icon>
-            {{ (user$)?.fullname }}
+            {{ user()?.fullname }}
           </button>
           <mat-menu #userMenu="matMenu">
-            <button mat-menu-item (click)="goToProfile()">Profile</button>
+            <!-- Show appropriate profile link based on role -->
+            @if (hasAdminRole()) {
+              <button mat-menu-item (click)="goToAdminProfile()">Admin Profile</button>
+            } @else if (hasUserRole()) {
+              <button mat-menu-item (click)="goToProfile()">Profile</button>
+            }
             <button mat-menu-item (click)="logout()">Logout</button>
           </mat-menu>
-            }@else {
-              <button mat-button (click)="goToLogin()">Login</button>
-            }
+        } @else {
+          <button mat-button (click)="goToLogin()">Login</button>
+        }
 
          </div>
 
