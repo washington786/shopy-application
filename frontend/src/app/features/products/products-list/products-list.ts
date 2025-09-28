@@ -9,7 +9,6 @@ import { ProductService } from '../../../core/services/product-service';
 import { ProductDto } from '../../../core/models/product.model';
 import { CategoryService } from '../../../core/services/category-service';
 import { CategoryDto } from '../../../core/models/category.model';
-import { CurrencyPipe } from '@angular/common';
 
 @Component({
   selector: 'app-products-list',
