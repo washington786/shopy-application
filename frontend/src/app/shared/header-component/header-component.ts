@@ -1,4 +1,4 @@
-import { Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
+import { ChangeDetectorRef, Component, computed, DestroyRef, inject, OnInit, signal } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { MatIconModule } from '@angular/material/icon'
 import { CartBadgeComponent } from "../cart-badge-component/cart-badge-component";
@@ -15,7 +15,7 @@ import { UserDto } from '../../core/models/auth.model';
 })
 
 export class HeaderComponent implements OnInit {
-  // store = inject(Store);
+  cdr = inject(ChangeDetectorRef);
   router = inject(Router);
   service = inject(AuthService);
   user = signal<UserDto | null>(null);
@@ -54,6 +54,7 @@ export class HeaderComponent implements OnInit {
 
   logout() {
     this.service.logout();
+    window.location.reload();
   }
 
   goToCart() {
@@ -74,6 +75,10 @@ export class HeaderComponent implements OnInit {
 
   ngOnInit(): void {
     this.loadUserProfile();
+    const tm = setTimeout(() => {
+      location.reload()
+    }, 3000);
+    clearTimeout(tm);
   }
 
   loadUserProfile() {
@@ -81,6 +86,7 @@ export class HeaderComponent implements OnInit {
       next: res => {
         this.user.set(res);
         this.isAuthenticated$.set(true);
+        this.service.isAuthenticated();
       }, error: error => {
         console.log('Header: ', error)
         this.isAuthenticated$.set(false);

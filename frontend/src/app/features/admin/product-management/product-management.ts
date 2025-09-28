@@ -60,15 +60,15 @@ export class ProductManagement implements OnInit {
     const dialogRef = this.dialog.open(AddForm, { width: "80%", height: "80%" });
     const sub = dialogRef.afterClosed().subscribe({
       next: product => {
-        console.log('Form Data: ', product);
+        if (!product) return;
         const sub = this.service.createProduct(product).subscribe({
           next: res => {
-            if (res)
-              this.snackBar.open("Item added successfully.", "Ok", { duration: 3000 });
+            this.snackBar.open("Item added successfully.", "Ok", { duration: 3000 });
             this.loadproducts();
           },
           error: error => {
-            this.snackBar.open(`${error}`, "Ok", { duration: 4000 });
+            console.log('Admin Products: ', error);
+            this.snackBar.open(`Failed to add product`, "Ok", { duration: 4000 });
           }
         });
         this.destroyRef.onDestroy(() => sub.unsubscribe());
