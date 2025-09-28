@@ -17,27 +17,57 @@ public class AdminService(UserManager<AppUser> userManager, RoleManager<Identity
     {
         var user = await userManager.FindByIdAsync(userId);
         if (user == null)
+        {
+            Console.WriteLine($"DEBUG: User with ID '{userId}' not found.");
             throw new KeyNotFoundException("User not found.");
+        }
+
+        Console.WriteLine($"DEBUG: Found user '{user.UserName}'. Current roles: {string.Join(", ", await userManager.GetRolesAsync(user))}");
+        Console.WriteLine($"DEBUG: Requested roles: {string.Join(", ", assignRoleRequest.Roles)}");
 
         // Validate all roles exist
         foreach (var role in assignRoleRequest.Roles)
         {
             if (!await roleManager.RoleExistsAsync(role))
+            {
+                Console.WriteLine($"DEBUG: Role '{role}' does not exist.");
                 throw new ArgumentException($"Role '{role}' does not exist.");
+            }
         }
 
         // Get current roles
         var currentRoles = await userManager.GetRolesAsync(user);
+        Console.WriteLine($"DEBUG: Current roles fetched: {string.Join(", ", currentRoles)}");
 
         // Remove user from roles not in request
         var rolesToRemove = currentRoles.Except(assignRoleRequest.Roles).ToList();
         if (rolesToRemove.Any())
-            await userManager.RemoveFromRolesAsync(user, rolesToRemove);
+        {
+            Console.WriteLine($"DEBUG: Removing roles: {string.Join(", ", rolesToRemove)}");
+            var removeResult = await userManager.RemoveFromRolesAsync(user, rolesToRemove);
+            if (!removeResult.Succeeded)
+            {
+                // Log the specific errors from UserManager
+                Console.WriteLine($"DEBUG: UserManager RemoveFromRolesAsync failed: {string.Join(", ", removeResult.Errors.Select(e => e.Description))}");
+                throw new InvalidOperationException($"Failed to remove user from roles: {string.Join(", ", removeResult.Errors.Select(e => e.Description))}");
+            }
+        }
 
         // Add user to new roles
         var rolesToAdd = assignRoleRequest.Roles.Except(currentRoles).ToList();
         if (rolesToAdd.Any())
-            await userManager.AddToRolesAsync(user, rolesToAdd);
+        {
+            Console.WriteLine($"DEBUG: Adding roles: {string.Join(", ", rolesToAdd)}");
+            var addResult = await userManager.AddToRolesAsync(user, rolesToAdd);
+            if (!addResult.Succeeded)
+            {
+                // Log the specific errors from UserManager
+                Console.WriteLine($"DEBUG: UserManager AddToRolesAsync failed: {string.Join(", ", addResult.Errors.Select(e => e.Description))}");
+                throw new InvalidOperationException($"Failed to add user to roles: {string.Join(", ", addResult.Errors.Select(e => e.Description))}");
+            }
+        }
+
+        Console.WriteLine($"DEBUG: Roles updated successfully for user '{user.UserName}'.");
     }
 
     public async Task<List<UserDto>> FetchAllUsersAsync(int page = 1, int pageSize = 10)

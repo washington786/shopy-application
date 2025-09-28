@@ -15,7 +15,7 @@ namespace Backend.Controllers
         [HttpPut("user/{userId}/roles")]
         public async Task<ActionResult> AssignUserRoleAsync(string userId, [FromBody] AssignRoleRequest assignRole)
         {
-            if (ModelState.IsValid) return BadRequest();
+            if (!ModelState.IsValid) return BadRequest();
 
             await service.AssignRoleToUserAsync(userId, assignRole);
 
