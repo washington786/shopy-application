@@ -34,5 +34,5 @@ Frontend: Angular 19, TypeScript, RxJS, Angular Material, Tailwind CSS, Ngrx
 Backend: ASP.NET Core 9, Entity Framework Core, SQL Server, Microsoft Identity
 Auth: JWT + Role-Based Access Control
 Payments: Stripe Checkout
-Deployment: Ready for Docker, Azure, Render, Vercel
+Deployment: Ready for Docker, Render
 
